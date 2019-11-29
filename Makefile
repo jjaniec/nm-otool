@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/11/29 16:13:42 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/11/29 19:23:29 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,10 @@ NAME = ft_nm
 UNAME_S := $(shell uname -s)
 
 SRC_NAME = main.c \
-			ft_nm.c
+			ft_nm.c \
+			is_magic_64.c \
+			is_big_endian.c \
+			swap_byte_range.c
 
 HEADER_NAME = ft_nm.h
 
