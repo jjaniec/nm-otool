@@ -63,6 +63,31 @@
 // 	uint32_t 	vmsize
 // }
 
+// struct section
+// {
+// 	char sectname[16];
+// 	char segname[16];
+// 	uint32_t addr;
+// 	uint32_t size;
+// 	uint32_t offset;
+// 	uint32_t align;
+// 	uint32_t reloff;
+// 	uint32_t nreloc;
+// 	uint32_t flags;
+// 	uint32_t reserved1;
+// 	uint32_t reserved2;
+// };
+
+// struct symtab_command
+// {
+// 	uint32_t cmd;
+// 	uint32_t cmdsize;
+// 	uint32_t symoff;
+// 	uint32_t nsyms;
+// 	uint32_t stroff;
+// 	uint32_t strsize;
+// };
+
 typedef struct s_ft_nm_file
 {
 	size_t totsiz;
