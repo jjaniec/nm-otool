@@ -44,11 +44,31 @@
 // 	uint32_t		flags;
 // };
 
-typedef struct	s_ft_nm_file {
-	size_t			totsiz;
-	char			*seek_ptr;
-	char			*content;
-}				t_ft_nm_file;
+// struct load_command {
+//   uint32_t cmd;
+//   uint32_t cmdsize;
+// };
+
+// struct segment_command {
+// 	uint32_t 	cmd
+// 	uint32_t 	cmdsize
+// 	uint32_t 	fileoff
+// 	uint32_t 	filesize
+// 	uint32_t 	flags
+// 	vm_prot_t 	initprot
+// 	vm_prot_t 	maxprot
+// 	uint32_t 	nsects
+// 	char 	segname [16]
+// 	uint32_t 	vmaddr
+// 	uint32_t 	vmsize
+// }
+
+typedef struct s_ft_nm_file
+{
+	size_t totsiz;
+	char *seek_ptr;
+	char *content;
+} t_ft_nm_file;
 
 typedef struct	s_ft_nm_info {
 	t_ft_nm_file		*file;
