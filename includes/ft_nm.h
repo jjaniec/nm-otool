@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/11/29 19:38:40 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 16:11:50 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,14 +95,14 @@ typedef struct s_ft_nm_file
 	char *content;
 } t_ft_nm_file;
 
-typedef struct	s_ft_nm_info {
+typedef struct	s_ft_nm_hdrinfo {
 	t_ft_nm_file		*file;
 	uint32_t			magic;
 	bool				is_64;
 	bool				is_be; // is big endian
 	size_t				machhdr_size;
 	uint32_t			ncmds;
-}				t_nm_info;
+}				t_ft_nm_hdrinfo;
 
 int					ft_nm(t_ft_nm_file *file);
 
@@ -111,5 +111,13 @@ bool				is_magic_64(uint32_t magic);
 bool				is_big_endian(uint32_t magic);
 
 void				swap_byte_range(void *bytes, size_t range);
+
+int					init_header_info(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo);
+
+int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
+
+off_t				slseek(t_ft_nm_file *file, off_t offset, int whence);
+
+int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd);
 
 #endif

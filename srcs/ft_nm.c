@@ -6,98 +6,20 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/11/30 22:04:19 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 16:12:08 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static int			sseek_read(t_ft_nm_file *file, void *buf, unsigned int size)
-{
-	unsigned int	i;
-
-	i = 0;
-	while (file->seek_ptr < (file->content + file->totsiz) && i < size)
-	{
-		*((unsigned char *)buf + i) = *((unsigned char *)file->seek_ptr);
-		file->seek_ptr += 1;
-		i++;
-	}
-	return (i);
-}
-
-static off_t		slseek(t_ft_nm_file *file, off_t offset, int whence)
-{
-	off_t	r;
-
-	r = -1;
-	if (whence == SLSEEK_CUR)
-	{
-		if ((offset <= 0 && (size_t)offset < (size_t)((*file).seek_ptr - (*file).content)) || \
-			((size_t)offset + (size_t)((*file).seek_ptr - (*file).content) <= (*file).totsiz))
-		{
-			(*file).seek_ptr += offset;
-			r = offset;
-		}
-	}
-	else if (whence == SLSEEK_SET)
-	{
-		if (offset >= 0 && (*file).totsiz >= (size_t)offset)
-		{
-			(*file).seek_ptr = (*file).content + offset;
-			r = offset;
-		}
-	}
-	return (r);
-}
-
-static uint32_t	get_ncmds(t_ft_nm_file *file, t_nm_info *fileinfo)
-{
-	struct mach_header		hdr;
-	struct mach_header_64	hdr64;
-
-	slseek(file, 0, SLSEEK_SET);
-	printf("lseek offset: %ld\n", file->seek_ptr - file->content);
-	if (fileinfo->is_64)
-	{
-		sseek_read(file, &hdr64, fileinfo->machhdr_size);
-		if (!fileinfo->is_be)
-			swap_byte_range(&hdr64, fileinfo->machhdr_size);
-		printf("Mach header 64:\nmagic\t\tcputype\t\tcpusubtype\tfiletype\tncmds\t\tsizeofcmds\tflags\n%x\t%u\t%u\t%u\t\t%u\t\t%u\t\t%x\n", hdr64.magic, hdr64.cputype, hdr64.cpusubtype, hdr64.filetype, hdr64.ncmds, hdr64.sizeofcmds, hdr64.flags);
-		return (hdr64.ncmds);
-	}
-	else
-	{
-		sseek_read(file, &hdr, fileinfo->machhdr_size);
-		if (!fileinfo->is_be)
-			swap_byte_range(&hdr, fileinfo->machhdr_size);
-		return (hdr.ncmds);
-	}
-	return (0);
-}
-
-static int		init_file_info(t_ft_nm_file *file, t_nm_info *fileinfo)
-{
-	uint32_t			magic;
-
-	sseek_read(file, &magic, sizeof(uint32_t));
-	fileinfo->is_64 = is_magic_64(magic);
-	fileinfo->is_be = is_big_endian(magic);
-	fileinfo->magic = magic;
-	fileinfo->machhdr_size = (fileinfo->is_64) ? \
-		(sizeof(struct mach_header_64)) : (sizeof(struct mach_header));
-	if ((fileinfo->ncmds = get_ncmds(file, fileinfo)) == 0)
-		return (-1);
-	return (0);
-}
-
-static void		dump_sections(t_ft_nm_file *file, t_nm_info *fileinfo, struct segment_command_64 *seg64)
+static int		dump_sections(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, struct segment_command_64 *seg64)
 {
 	struct section_64	section;
 	void			*section_ptr;
 	uint32_t		i;
 
 	i = 0;
+	printf("Segname64: %s\n", seg64->segname);
 	section_ptr = (void *)(seg64 + 1);
 	while (i < seg64->nsects)
 	{
@@ -106,7 +28,8 @@ static void		dump_sections(t_ft_nm_file *file, t_nm_info *fileinfo, struct segme
 		printf("Section: %s - %s\n", section.segname, section.sectname);
 		i++;
 		section_ptr += sizeof(struct section_64);
-	}	
+	}
+	return (0);
 }
 
 static char		*get_symbol_type(uint32_t type)
@@ -124,7 +47,7 @@ static char		*get_symbol_type(uint32_t type)
 	return NULL;
 }
 
-static void		dump_syms(t_ft_nm_file *file, t_nm_info *fileinfo, struct symtab_command *symtabcmd)
+static void		dump_syms(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, struct symtab_command *symtabcmd)
 {
 	uint32_t			i;
 	struct nlist_64		*symtab;
@@ -150,7 +73,7 @@ static void		dump_syms(t_ft_nm_file *file, t_nm_info *fileinfo, struct symtab_co
 	}
 }
 
-static void		dump_cmds(t_ft_nm_file *file, t_nm_info *fileinfo)
+static void		dump_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo)
 {
 	uint32_t					i = 0;
 	struct load_command			cmd;
@@ -185,18 +108,27 @@ static void		dump_cmds(t_ft_nm_file *file, t_nm_info *fileinfo)
 		}
 		if (cmd.cmd == LC_SYMTAB)
 			dump_syms(file, fileinfo, file->content + seek_ptr_save);
-		// slseek(file, seek_ptr_save + sizeof(struct segment_command), SLSEEK_SET);
 		slseek(file, seek_ptr_save + cmd.cmdsize, SLSEEK_SET);
 		i++;
 	}
 }
 
+
 int				ft_nm(t_ft_nm_file *file)
 {
-	t_nm_info		fileinfo;
+	t_ft_nm_hdrinfo		hdrinfo;
+	int					idx;
+	struct load_command	cmd;
 
 	printf("Filesize: %zu\n", file->totsiz);
-	init_file_info(file, &fileinfo);
-	dump_cmds(file, &fileinfo);
+	init_header_info(file, &hdrinfo);
+	slseek(file, hdrinfo.machhdr_size, SLSEEK_SET);
+	// if ((idx = goto_load_command(file, &hdrinfo, (int [2]){LC_SEGMENT, LC_SEGMENT_64}, &cmd)) != -1)
+		// dump_sections(file, fileinfo, )
+	if ((idx = goto_load_command(file, &hdrinfo, (int [2]){LC_SYMTAB, 0}, &cmd)) != -1)
+	{
+		dump_syms(file, &hdrinfo, file->seek_ptr - sizeof(struct load_command));
+	}
+	// dump_cmds(file, &hdrinfo);
 	return (0);
 }
