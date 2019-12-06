@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 17:30:51 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 18:27:03 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,9 @@ typedef struct	s_ft_nm_hdrinfo {
 	bool				is_be; // is big endian
 	size_t				machhdr_size;
 	uint32_t			ncmds;
+	uint8_t				text_nsect;
+	uint8_t				data_nsect;
+	uint8_t				bss_nsect;
 }				t_ft_nm_hdrinfo;
 
 typedef struct	s_ft_nm_sym {

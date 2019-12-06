@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 17:35:12 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 18:15:02 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,11 @@ static void		dump_symlist(t_ft_nm_sym *symlist)
 	s = symlist;
 	while (s)
 	{
-		ft_printf((s->symvalue != 0) ? \
-			("%016" PRIx64 " %c %s\n") : ("%16c %c %s\n"), \
-			(s->symvalue) ? (s->symvalue) : (' '), \
-			s->symtype, s->symname);
+		if (s->symtype != '-')
+			ft_printf((s->symvalue != 0) ? \
+				("%016" PRIx64 " %c %s\n") : ("%16c %c %s\n"), \
+				(s->symvalue) ? (s->symvalue) : (' '), \
+				s->symtype, s->symname);
 		s = s->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 17:36:03 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 18:32:31 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@ int			init_header_info(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo)
 	hdrinfo->is_64 = is_magic_64(magic);
 	hdrinfo->is_be = is_big_endian(magic);
 	hdrinfo->magic = magic;
+	hdrinfo->text_nsect = 1;
+	hdrinfo->data_nsect = 2;
+	hdrinfo->bss_nsect = NO_SECT;
 	hdrinfo->machhdr_size = (hdrinfo->is_64) ? \
 		(sizeof(struct mach_header_64)) : (sizeof(struct mach_header));
 	if ((hdrinfo->ncmds = get_ncmds(file, hdrinfo)) == 0)

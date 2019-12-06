@@ -6,25 +6,41 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 17:35:01 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 18:39:07 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static char		*get_symbol_type(uint32_t type)
+static char		get_symbol_type(struct nlist_64 *nl, t_ft_nm_hdrinfo *hdrinfo)
 {
+	uint32_t type = nl->n_type & N_TYPE;
+
 	if (type == N_UNDF)
-		return "U";
+	{
+		if (nl->n_value)
+			return ('c');
+		return ('u');
+	}
 	if (type == N_ABS)
-		return "TODO";
+		return ('a');
 	if (type == N_SECT)
-		return "T";
+	{
+		if (nl->n_sect == hdrinfo->text_nsect)
+			return ('t');
+		else if (nl->n_sect == hdrinfo->data_nsect)
+			return ('d');
+		else if (nl->n_sect == hdrinfo->bss_nsect)
+			return ('b');
+		return ('s');
+	}
 	if (type == N_PBUD)
-		return "TODO";
+		return ('u');
 	if (type == N_INDR)
-		return "TODO";
-	return NULL;
+		return ('i');
+	// printf("Type not found: %u\n", type);
+	// fflush(stdout);
+	return ('?');
 }
 
 /*
@@ -68,13 +84,14 @@ t_ft_nm_sym		*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symname, c
 ** Build symbol list and return beginning of the list
 */
 
-t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, struct symtab_command *symtabcmd)
+t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct symtab_command *symtabcmd)
 {
 	uint32_t			i;
 	struct nlist_64		*symtab;
 	struct nlist_64		nl;
-	const char* strtab;
+	const char*			strtab;
 	t_ft_nm_sym			*list = NULL;
+	char				type;
 
 	i = 0;
 	strtab = symtabcmd->stroff + (char *)file->content;
@@ -87,10 +104,13 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, s
 		sseek_read(file, &nl, sizeof(struct nlist_64));
 		i++;
 		if (nl.n_type & N_STAB)
-			continue;
-		const char* type = get_symbol_type(nl.n_type & N_TYPE);
+			type = '-';
+		else
+			type = get_symbol_type(&nl, hdrinfo);
+		if ((nl.n_type & N_EXT) && type != '?')
+		    type = toupper(type);
 		const char* symname = &strtab[nl.n_un.n_strx];
-		append_sym(&list, nl.n_value, symname, type[0]);
+		append_sym(&list, nl.n_value, symname, type);
 	}
 	return (list);
 }
