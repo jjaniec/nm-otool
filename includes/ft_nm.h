@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 18:27:03 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 22:27:48 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,24 +97,39 @@
 //		uint64_t n_value;
 //	};
 
-typedef struct s_ft_nm_file
-{
-	size_t totsiz;
-	char *seek_ptr;
-	char *content;
-} t_ft_nm_file;
+// struct fat_arch {
+//     cpu_type_t  cputype;    /* cpu specifier (int) */
+//     cpu_subtype_t   cpusubtype; /* machine specifier (int) */
+//     uint32_t    offset;     /* file offset to this object file */
+//     uint32_t    size;       /* size of this object file */
+//     uint32_t    align;      /* alignment as a power of 2 */
+// };
 
-typedef struct	s_ft_nm_hdrinfo {
-	t_ft_nm_file		*file;
-	uint32_t			magic;
-	bool				is_64;
-	bool				is_be; // is big endian
-	size_t				machhdr_size;
-	uint32_t			ncmds;
-	uint8_t				text_nsect;
-	uint8_t				data_nsect;
-	uint8_t				bss_nsect;
-}				t_ft_nm_hdrinfo;
+// struct fat_header {
+//     uint32_t    magic;      /* FAT_MAGIC or FAT_MAGIC_64 */
+//     uint32_t    nfat_arch;  /* number of structs that follow */
+// };
+
+typedef struct				s_ft_nm_file
+{
+	size_t					totsiz;
+	char					*seek_ptr;
+	char					*content;
+}							t_ft_nm_file;
+
+typedef struct				s_ft_nm_hdrinfo {
+	t_ft_nm_file			*file;
+	uint32_t				magic;
+	uint32_t				offset;
+	bool					is_64;
+	bool					is_be; // is big endian
+	size_t					machhdr_size;
+	uint32_t				ncmds;
+	uint8_t					text_nsect;
+	uint8_t					data_nsect;
+	uint8_t					bss_nsect;
+	struct s_ft_nm_hdrinfo	*next;
+}							t_ft_nm_hdrinfo;
 
 typedef struct	s_ft_nm_sym {
 	uint64_t			symvalue;
@@ -127,6 +142,8 @@ typedef struct	s_ft_nm_sym {
 int					ft_nm(t_ft_nm_file *file);
 
 bool				is_magic_64(uint32_t magic);
+
+bool				is_magic_fat(uint32_t magic);
 
 bool				is_big_endian(uint32_t magic);
 
@@ -141,5 +158,7 @@ off_t				slseek(t_ft_nm_file *file, off_t offset, int whence);
 int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd);
 
 t_ft_nm_sym			*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, struct symtab_command *symtabcmd);
+
+uint32_t			swap_32bit(uint32_t x);
 
 #endif

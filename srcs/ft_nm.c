@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 18:15:02 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 22:29:47 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,10 +101,10 @@ int				ft_nm(t_ft_nm_file *file)
 
 	// printf("Filesize: %zu\n", file->totsiz);
 	init_header_info(file, &hdrinfo);
-	slseek(file, hdrinfo.machhdr_size, SLSEEK_SET);
+	slseek(file, hdrinfo.offset + hdrinfo.machhdr_size, SLSEEK_SET);
 	// if ((idx = goto_load_command(file, &hdrinfo, (int [2]){LC_SEGMENT, LC_SEGMENT_64}, &cmd)) != -1)
 		// dump_sections(file, fileinfo, )
-	if ((idx = goto_load_command(file, &hdrinfo, (int [2]){LC_SYMTAB, 0}, &cmd)) != -1)
+	if ((idx = goto_load_command(file, &hdrinfo, (int [/*2*/3]){LC_SYMTAB, 0}, &cmd)) != -1)
 	{
 		symlist = build_symbol_list(\
 			file, &hdrinfo, \

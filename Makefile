@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/06 17:02:09 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/06 22:27:31 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,12 +18,14 @@ SRC_NAME = main.c \
 			ft_nm.c \
 			is_magic_64.c \
 			is_big_endian.c \
+			is_magic_fat.c \
 			swap_byte_range.c \
 			slseek.c \
 			sseek_read.c \
 			init_header_info.c \
 			goto_load_command.c \
-			build_symbol_list.c
+			build_symbol_list.c \
+			swap_32bit.c
 
 HEADER_NAME = ft_nm.h
 
@@ -36,7 +38,7 @@ OBJ = $(addprefix $(OBJ_DIR), $(SRC_NAME:.c=.o))
 
 CC = gcc
 CFLAGS = -Wall -Wextra # -Werror
-# DEV_FLAGS = -g -fsanitize=address -fno-omit-frame-pointer
+DEV_FLAGS = -g -fsanitize=address -fno-omit-frame-pointer
 IFLAGS = -I./ft_printf/includes -I./$(INCLUDES_DIR)
 LFLAGS = -L./ft_printf -lftprintf
 

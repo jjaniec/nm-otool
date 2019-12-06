@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:11:24 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 17:35:48 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 22:28:36 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,20 +40,23 @@ static int		indexof_int(int x, int *tab, unsigned int tab_size)
 int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd)
 {
 	off_t						seek_ptr_save;
-	uint32_t					i = 0;
+	uint32_t					i;
 	int							idx;
-	void						*data_ptr;
 
+	i = 0;
 	while (i < hdrinfo->ncmds)
 	{
 		seek_ptr_save = file->seek_ptr - file->content;
 		sseek_read(file, cmd, sizeof(struct load_command));
 		if (!hdrinfo->is_be)
 			swap_byte_range(cmd, sizeof(struct load_command));
-		// printf("Load command size: seek: %d - %u - .cmd %u ?= %i ?= %i\n", file->seek_ptr - file->content, cmd->cmdsize, cmd->cmd, load_cmds[0], load_cmds[1]);
+		dprintf(2, "Load command %u seek: %ld - size: %u - .cmd %u ?= %i ?= %i\n", \
+			i, file->seek_ptr - file->content, cmd->cmdsize, cmd->cmd, load_cmds[0], load_cmds[1]);
 		if ((idx = indexof_int(cmd->cmd, load_cmds, 2)) != -1)
 			return (idx);
-		slseek(file, seek_ptr_save + cmd->cmdsize, SLSEEK_SET);
+		slseek(file, seek_ptr_save + \
+			cmd->cmdsize, \
+			SLSEEK_SET);
 		i++;
 	}
 	return (-1);

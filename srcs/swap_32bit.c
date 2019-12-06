@@ -1,19 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   is_magic_64.c                                      :+:      :+:    :+:   */
+/*   32bit_swap.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/29 17:56:03 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 20:49:58 by jjaniec          ###   ########.fr       */
+/*   Created: 2019/12/06 22:19:29 by jjaniec           #+#    #+#             */
+/*   Updated: 2019/12/06 22:21:53 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-bool	is_magic_64(uint32_t magic)
+uint32_t		swap_32bit(uint32_t x)
 {
-	return (magic == MH_MAGIC_64 || magic == MH_CIGAM_64 || \
-			magic == FAT_MAGIC_64 || magic == FAT_CIGAM_64);
+	return ((((x) & 0xff000000) >> 24) | \
+		(((x) & 0xff0000) >> 8) | \
+		(((x) & 0xff00) << 8) | \
+		(((x) & 0xff) << 24));
 }

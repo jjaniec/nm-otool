@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 18:39:07 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 22:35:59 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,8 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 	char				type;
 
 	i = 0;
-	strtab = symtabcmd->stroff + (char *)file->content;
-	slseek(file, symtabcmd->symoff, SLSEEK_SET);
+	strtab = hdrinfo->offset + symtabcmd->stroff + (char *)file->content;
+	slseek(file, hdrinfo->offset + symtabcmd->symoff, SLSEEK_SET);
 	symtab = (struct nlist_64 *)file->seek_ptr;
 	// printf("%u symtabcmd offset - nsysms: %u\n", symtabcmd->symoff, symtabcmd->nsyms);
 	while (i < symtabcmd->nsyms)
