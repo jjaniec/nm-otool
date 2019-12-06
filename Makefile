@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/06 16:16:39 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/06 17:02:09 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,8 @@ SRC_NAME = main.c \
 			slseek.c \
 			sseek_read.c \
 			init_header_info.c \
-			goto_load_command.c
+			goto_load_command.c \
+			build_symbol_list.c
 
 HEADER_NAME = ft_nm.h
 

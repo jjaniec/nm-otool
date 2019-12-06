@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 15:25:09 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 17:36:03 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,12 @@ static uint32_t	get_ncmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo)
 	struct mach_header_64	hdr64;
 
 	slseek(file, 0, SLSEEK_SET);
-	printf("lseek offset: %ld\n", file->seek_ptr - file->content);
 	if (fileinfo->is_64)
 	{
 		sseek_read(file, &hdr64, fileinfo->machhdr_size);
 		if (!fileinfo->is_be)
 			swap_byte_range(&hdr64, fileinfo->machhdr_size);
-		printf("Mach header 64:\nmagic\t\tcputype\t\tcpusubtype\tfiletype\tncmds\t\tsizeofcmds\tflags\n%x\t%u\t%u\t%u\t\t%u\t\t%u\t\t%x\n", hdr64.magic, hdr64.cputype, hdr64.cpusubtype, hdr64.filetype, hdr64.ncmds, hdr64.sizeofcmds, hdr64.flags);
+		// printf("Mach header 64:\nmagic\t\tcputype\t\tcpusubtype\tfiletype\tncmds\t\tsizeofcmds\tflags\n%x\t%u\t%u\t%u\t\t%u\t\t%u\t\t%x\n", hdr64.magic, hdr64.cputype, hdr64.cpusubtype, hdr64.filetype, hdr64.ncmds, hdr64.sizeofcmds, hdr64.flags);
 		return (hdr64.ncmds);
 	}
 	else

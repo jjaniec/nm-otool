@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:11:24 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 16:16:22 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 17:35:48 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cm
 		sseek_read(file, cmd, sizeof(struct load_command));
 		if (!hdrinfo->is_be)
 			swap_byte_range(cmd, sizeof(struct load_command));
-		printf("Load command size: seek: %d - %u - .cmd %u ?= %i ?= %i\n", file->seek_ptr - file->content, cmd->cmdsize, cmd->cmd, load_cmds[0], load_cmds[1]);
+		// printf("Load command size: seek: %d - %u - .cmd %u ?= %i ?= %i\n", file->seek_ptr - file->content, cmd->cmdsize, cmd->cmd, load_cmds[0], load_cmds[1]);
 		if ((idx = indexof_int(cmd->cmd, load_cmds, 2)) != -1)
 			return (idx);
 		slseek(file, seek_ptr_save + cmd->cmdsize, SLSEEK_SET);

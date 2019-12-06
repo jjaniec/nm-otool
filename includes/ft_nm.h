@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 16:11:50 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/06 17:30:51 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <mach/machine.h>
 # include <mach-o/loader.h>
 # include <mach-o/swap.h>
+# include <inttypes.h>
 
 # define SLSEEK_CUR		1
 # define SLSEEK_SET		2
@@ -88,6 +89,14 @@
 // 	uint32_t strsize;
 // };
 
+//	struct nlist_64 {
+//		uint32_t n_strx;
+//		uint8_t n_type;
+//		uint8_t n_sect;
+//		uint16_t n_desc;
+//		uint64_t n_value;
+//	};
+
 typedef struct s_ft_nm_file
 {
 	size_t totsiz;
@@ -104,6 +113,14 @@ typedef struct	s_ft_nm_hdrinfo {
 	uint32_t			ncmds;
 }				t_ft_nm_hdrinfo;
 
+typedef struct	s_ft_nm_sym {
+	uint64_t			symvalue;
+	char				*symname;
+	char				symtype;
+	struct s_ft_nm_sym	*next;
+}				t_ft_nm_sym;
+
+
 int					ft_nm(t_ft_nm_file *file);
 
 bool				is_magic_64(uint32_t magic);
@@ -119,5 +136,7 @@ int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
 off_t				slseek(t_ft_nm_file *file, off_t offset, int whence);
 
 int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd);
+
+t_ft_nm_sym			*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, struct symtab_command *symtabcmd);
 
 #endif
