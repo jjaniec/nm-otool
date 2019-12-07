@@ -6,19 +6,18 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/07 17:56:02 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/07 19:13:01 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static char		get_symbol_type(struct nlist_64 *nl, t_ft_nm_hdrinfo *hdrinfo)
+static char		get_symbol_type(uint8_t type, uint8_t sect, uint64_t value, t_ft_nm_hdrinfo *hdrinfo)
 {
-	uint32_t type = nl->n_type & N_TYPE;
-
+	type = type & N_TYPE;
 	if (type == N_UNDF)
 	{
-		if (nl->n_value)
+		if (value)
 			return ('c');
 		return ('u');
 	}
@@ -26,13 +25,12 @@ static char		get_symbol_type(struct nlist_64 *nl, t_ft_nm_hdrinfo *hdrinfo)
 		return ('a');
 	if (type == N_SECT)
 	{
-		if (nl->n_sect == hdrinfo->text_nsect)
+		if (sect == hdrinfo->text_nsect)
 			return ('t');
-		else if (nl->n_sect == hdrinfo->data_nsect)
+		else if (sect == hdrinfo->data_nsect)
 			return ('d');
-		else if (nl->n_sect == hdrinfo->bss_nsect)
+		else if (sect == hdrinfo->bss_nsect)
 			return ('b');
-		// return ('0' + nl->n_sect);
 		return ('s');
 	}
 	if (type == N_PBUD)
@@ -50,18 +48,20 @@ static char		get_symbol_type(struct nlist_64 *nl, t_ft_nm_hdrinfo *hdrinfo)
 ** at the start
 */
 
-t_ft_nm_sym		*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symname, char symtype)
+static t_ft_nm_sym	*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symname, char symtype)
 {
 	t_ft_nm_sym		*new;
 	t_ft_nm_sym		*e;
 	t_ft_nm_sym		*prev;
 
+	e = *list;
+	// if (!(e && e->symname))
+	// 	return (NULL);
 	if (!(new = malloc(sizeof(t_ft_nm_sym))))
 		return (NULL);
 	new->symvalue = symvalue;
 	new->symname = symname;
 	new->symtype = symtype;
-	e = *list;
 	prev = NULL;
 	while (e && ft_strcmp(new->symname, e->symname) >= 0)
 	{
@@ -98,7 +98,6 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 	strtab = hdrinfo->offset + symtabcmd->stroff + (char *)file->content;
 	slseek(file, hdrinfo->offset + symtabcmd->symoff, SLSEEK_SET);
 	symtab = (struct nlist_64 *)file->seek_ptr;
-	// printf("%u symtabcmd offset - nsysms: %u\n", symtabcmd->symoff, symtabcmd->nsyms);
 	while (i < symtabcmd->nsyms)
 	{
 		slseek(file, &symtab[i], SLSEEK_SET);
@@ -107,7 +106,37 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 		if (nl.n_type & N_STAB)
 			type = '-';
 		else
-			type = get_symbol_type(&nl, hdrinfo);
+			type = get_symbol_type(nl.n_type, nl.n_sect, nl.n_value, hdrinfo);
+		if ((nl.n_type & N_EXT) && type != '?')
+		    type = toupper(type);
+		const char* symname = &strtab[nl.n_un.n_strx];
+		append_sym(&list, nl.n_value, symname, type);
+	}
+	return (list);
+}
+
+t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct symtab_command *symtabcmd)
+{
+	uint32_t			i;
+	struct nlist		*symtab;
+	struct nlist		nl;
+	const char*			strtab;
+	t_ft_nm_sym			*list = NULL;
+	char				type;
+
+	i = 0;
+	strtab = hdrinfo->offset + symtabcmd->stroff + (char *)file->content;
+	slseek(file, hdrinfo->offset + symtabcmd->symoff, SLSEEK_SET);
+	symtab = (struct nlist *)file->seek_ptr;
+	while (i < symtabcmd->nsyms)
+	{
+		slseek(file, &symtab[i], SLSEEK_SET);
+		sseek_read(file, &nl, sizeof(struct nlist));
+		i++;
+		if (nl.n_type & N_STAB)
+			type = '-';
+		else
+			type = get_symbol_type(nl.n_type, nl.n_sect, nl.n_value, hdrinfo);
 		if ((nl.n_type & N_EXT) && type != '?')
 		    type = toupper(type);
 		const char* symname = &strtab[nl.n_un.n_strx];

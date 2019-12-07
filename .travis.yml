@@ -30,6 +30,15 @@ matrix:
       compiler: clang
       osx_image: xcode8
       env: CXX=clang
+  allow_failures:
+    - os: osx
+      compiler: gcc
+      osx_image: xcode8
+      env: CXX=gcc
+    - os: osx
+      compiler: clang
+      osx_image: xcode8
+      env: CXX=clang
 script:
   - make
   - (cd tests && ./basic_tests.sh)
