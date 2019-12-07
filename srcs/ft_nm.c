@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/07 17:46:01 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/07 17:54:21 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ int				ft_nm(t_ft_nm_file *file)
 	t_ft_nm_sym			*symlist;
 	uint32_t			load_command_size;
 
-	if (init_header_info(file, &hdrinfo) == -1)
+	if (init_header_info(file, &hdrinfo) == 1)
 	{
 		dprintf(2, "The file was not recognized as a valid object file\n");
 		return (1);

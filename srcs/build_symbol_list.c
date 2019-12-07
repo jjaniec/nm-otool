@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/07 17:42:43 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/07 17:56:02 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ t_ft_nm_sym		*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symname, c
 	new->symtype = symtype;
 	e = *list;
 	prev = NULL;
-	while (e && ft_strcmp(new->symname, e->symname) > 0)
+	while (e && ft_strcmp(new->symname, e->symname) >= 0)
 	{
 		prev = e;
 		e = e->next;

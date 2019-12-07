@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 22:37:13 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/07 17:54:13 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,9 @@ int					init_header_info(t_ft_nm_file *file, \
 			nfat_arch = swap_32bit(nfat_arch);
 		handle_fat_header(file, hdrinfo, nfat_arch);
 	}
-	else
+	else if (is_magic_mach(magic))
 		init_macho_header(file, hdrinfo, 0);
+	else
+		return (1);
 	return (0);
 }

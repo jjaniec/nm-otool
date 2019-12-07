@@ -145,6 +145,8 @@ bool				is_magic_64(uint32_t magic);
 
 bool				is_magic_fat(uint32_t magic);
 
+bool				is_magic_mach(uint32_t magic);
+
 bool				is_big_endian(uint32_t magic);
 
 void				swap_byte_range(void *bytes, size_t range);

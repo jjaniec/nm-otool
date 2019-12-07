@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/06 22:27:31 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/07 17:54:34 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ SRC_NAME = main.c \
 			init_header_info.c \
 			goto_load_command.c \
 			build_symbol_list.c \
+			is_magic_mach.c \
 			swap_32bit.c
 
 HEADER_NAME = ft_nm.h
