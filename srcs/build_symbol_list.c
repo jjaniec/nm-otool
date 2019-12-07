@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 22:35:59 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/07 17:42:43 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static char		get_symbol_type(struct nlist_64 *nl, t_ft_nm_hdrinfo *hdrinfo)
 			return ('d');
 		else if (nl->n_sect == hdrinfo->bss_nsect)
 			return ('b');
+		// return ('0' + nl->n_sect);
 		return ('s');
 	}
 	if (type == N_PBUD)
