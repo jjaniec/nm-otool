@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 16:39:09 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/13 19:11:10 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,14 @@ char			*safe_read_symname(t_ft_nm_file *file, const char *strtab_offset, unsigne
 	char		*symname;
 	char		symname_buf[512];
 	int			r;
-	off_t		original_offset;
+	size_t		original_offset;
 
 	symname = NULL;
 	original_offset = file->seek_ptr - file->content;
-	if (slseek(file, (off_t)(&strtab_offset[index] - file->content), SLSEEK_SET) == -1)
+	// return (&strtab_offset[index]);
+	if (slseek(file, (int)(&strtab_offset[index] - file->content), SLSEEK_SET) == -1)
 		return (symname);
+	// return (&strtab_offset[index]);
 	if ((r = sseek_read(file, &symname_buf, 512)) != -1)
 	{
 		if ((file->seek_ptr - file->content) != (long)file->totsiz)
@@ -115,12 +117,17 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 	char				type;
 
 	i = 0;
+	dprintf(2, "Build symbol list 64\n");
 	strtab = hdrinfo->fat_offset + symtabcmd->stroff + (char *)file->content;
 	slseek(file, hdrinfo->fat_offset + symtabcmd->symoff, SLSEEK_SET);
 	symtab = (struct nlist_64 *)file->seek_ptr;
 	while (i < symtabcmd->nsyms)
 	{
-		slseek(file, &symtab[i], SLSEEK_SET);
+		if (-1 == slseek(file, (int)((char *)&symtab[i] - file->content), SLSEEK_SET))
+		{
+			dprintf(2, "slseek() failed\n");
+			exit(1);
+		}
 		sseek_read(file, &nl, sizeof(struct nlist_64));
 		i++;
 		if (nl.n_type & N_STAB)
@@ -130,7 +137,11 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 		if ((nl.n_type & N_EXT) && type != '?')
 		    type = toupper(type);
 		if (!(symname = safe_read_symname(file, strtab, nl.n_un.n_strx)))
+		{
+			dprintf(2, "Failed to read symname\n");
 			exit(1);
+		}
+		dprintf(2, "Add symname: %s\n", symname);
 		append_sym(&list, nl.n_value, symname, type);
 	}
 	return (list);
@@ -147,6 +158,7 @@ t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo,
 	char				type;
 
 	i = 0;
+	dprintf(2, "Build symbol list 32\n");
 	strtab = hdrinfo->fat_offset + symtabcmd->stroff + (char *)file->content;
 	slseek(file, hdrinfo->fat_offset + symtabcmd->symoff, SLSEEK_SET);
 	symtab = (struct nlist *)file->seek_ptr;

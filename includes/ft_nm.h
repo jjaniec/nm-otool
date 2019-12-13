@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 16:31:02 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/13 18:39:12 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@
 
 typedef struct				s_ft_nm_file
 {
-	size_t					totsiz;
+	int						totsiz;
 	char					*seek_ptr;
 	char					*content;
 }							t_ft_nm_file;
@@ -127,6 +127,7 @@ typedef struct				s_ft_nm_hdrinfo {
 	uint32_t				fat_align;
 	uint32_t				fat_offset;
 	uint32_t				magic;
+	cpu_type_t				cpu_type;
 	bool					is_64;
 	bool					is_be; // is big endian
 	size_t					machhdr_size;
@@ -161,7 +162,7 @@ int					init_header_info(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo);
 
 int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
 
-off_t				slseek(t_ft_nm_file *file, off_t offset, int whence);
+int					slseek(t_ft_nm_file *file, int offset, int whence);
 
 int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd);
 
@@ -171,6 +172,6 @@ t_ft_nm_sym			*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 
 uint32_t			swap_32bit(uint32_t x);
 
-int					check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, uint32_t offset);
+int					check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, int offset);
 
 #endif

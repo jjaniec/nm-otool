@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 16:41:04 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/13 19:10:38 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,12 @@ static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 	uint32_t			sect_count;
 
 	sect_count = 0;
+	slseek(file, hdrinfo->fat_offset + hdrinfo->machhdr_size, SLSEEK_SET);
 	while ((idx = goto_load_command(file, hdrinfo, (int [3]){LC_SEGMENT, LC_SEGMENT_64}, cmd)) != -1)
 	{
 		load_command_size = cmd->cmdsize;
 		load_command_offset = file->seek_ptr - file->content - sizeof(struct load_command);
-		slseek(file, - sizeof(struct load_command), SLSEEK_CUR);
+		slseek(file, - ((int)sizeof(struct load_command)), SLSEEK_CUR);
 		if (hdrinfo->is_64)
 			parse_cmd_sectn(file, hdrinfo, (struct segment_command_64 *)file->seek_ptr, &sect_count);
 		else
@@ -123,40 +124,48 @@ static void		dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist)
 	}
 }
 
-static t_ft_nm_hdrinfo	*decide_hdr_to_use(t_ft_nm_hdrinfo *hdr_list)
+static t_ft_nm_hdrinfo	*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, cpu_type_t target_type)
 {
-	
+	t_ft_nm_hdrinfo		*h;
+
+	h = hdr_list;
+	while (h && h->cpu_type != target_type)
+		h = h->next;
+	return (h);
 }
 
 int				ft_nm(t_ft_nm_file *file)
 {
-	t_ft_nm_hdrinfo		hdrinfo;
+	t_ft_nm_hdrinfo		hdrs;
 	t_ft_nm_hdrinfo		*hdr_to_use;
 	int					idx;
 	struct load_command	cmd;
 	t_ft_nm_sym			*symlist;
 	// uint32_t			load_command_size;
 
-	if (init_header_info(file, &hdrinfo) == 1)
+	if (init_header_info(file, &hdrs) == 1)
 	{
 		dprintf(2, "The file was not recognized as a valid object file\n");
 		return (1);
 	}
-	slseek(file, hdrinfo.fat_offset + hdrinfo.machhdr_size, SLSEEK_SET);
-	parse_file_segment_cmds(file, &hdrinfo, &cmd);
-	dprintf(2, "text_nsect: %d - data_nsect: %d - bss_nsect: %d\n", hdrinfo.text_nsect, hdrinfo.data_nsect, hdrinfo.bss_nsect);
-	slseek(file, hdrinfo.fat_offset + hdrinfo.machhdr_size, SLSEEK_SET);
-	if ((idx = goto_load_command(file, &hdrinfo, (int [3]){LC_SYMTAB, 0}, &cmd)) != -1)
+	if (!(hdr_to_use = goto_hdr_cpu_type(&hdrs, HOST_CPU_TYPE)) && \
+		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_X86)) && \
+		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_I386)))
+		return (1);
+	parse_file_segment_cmds(file, hdr_to_use, &cmd);
+	dprintf(2, "text_nsect: %d - data_nsect: %d - bss_nsect: %d\n", hdr_to_use->text_nsect, hdr_to_use->data_nsect, hdr_to_use->bss_nsect);
+	slseek(file, hdr_to_use->fat_offset + hdr_to_use->machhdr_size, SLSEEK_SET);
+	if ((idx = goto_load_command(file, hdr_to_use, (int [3]){LC_SYMTAB, 0}, &cmd)) != -1)
 	{
-		if (hdrinfo.is_64)
+		if (hdr_to_use->is_64)
 			symlist = build_symbol_list(\
-				file, &hdrinfo, \
+				file, hdr_to_use, \
 				(void *)file->seek_ptr - sizeof(struct load_command));
 		else
 			symlist = build_symbol_list_32(\
-				file, &hdrinfo, \
+				file, hdr_to_use, \
 				(void *)file->seek_ptr - sizeof(struct load_command));
-		dump_symlist(&hdrinfo, symlist);
+		dump_symlist(hdr_to_use, symlist);
 	}
 	return (0);
 }

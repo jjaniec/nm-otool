@@ -5,9 +5,10 @@ set -o nounset
 set -o verbose
 
 dirs=(
-  "$PWD/corrupted_binaries/*"
+	"$PWD/corrupted_binaries/*"
 	"/bin/*"
 	"/usr/bin/*"
+	"/usr/lib/*"
 )
 
 failed_count=0
@@ -21,6 +22,7 @@ do
 		r=${?}
 		if [ ${r} -ne 0 ];
 		then
+			echo -e "\t${i} failed to match, total: ${failed_count}"
 			failed_count=$[${failed_count}+1]
 			exit_code=${r}
 		fi;
