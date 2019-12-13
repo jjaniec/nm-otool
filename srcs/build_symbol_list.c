@@ -81,6 +81,37 @@ static t_ft_nm_sym	*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symn
 	return (new);
 }
 
+char			*safe_read_symname(t_ft_nm_file *file, const char *strtab_offset, unsigned int index)
+{
+	char		*symname;
+	char		symname_buf[256];
+	int			r;
+	off_t		original_offset;
+
+	symname = NULL;
+	original_offset = file->seek_ptr - file->content;
+	// printf("aaaa %lu %lu - size: %zu - index: %u\n", &strtab_offset[index] - file->content, file->seek_ptr - file->content, file->totsiz, index);
+	// return &strtab_offset[index];
+	if (slseek(file, (off_t)(&strtab_offset[index] - file->content) /*- file->content*/, SLSEEK_SET) == -1)
+	{
+		// printf("bbb %u\n", strtab_offset);
+		return (symname);
+	}
+	// slseek(file, original_offset, SLSEEK_SET);
+	// return &strtab_offset[index];
+
+	if ((r = sseek_read(file, &symname_buf, 256)) != -1)
+	{
+		if ((file->seek_ptr - file->content) != (long)file->totsiz)
+		{
+			symname = ft_strdup(symname_buf);
+			// slseek(file, -r, SLSEEK_CUR);
+		}
+	}
+	slseek(file, original_offset, SLSEEK_SET);
+	return (symname);
+}
+
 /*
 ** Build symbol list and return beginning of the list
 */
@@ -91,10 +122,13 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 	struct nlist_64		*symtab;
 	struct nlist_64		nl;
 	const char*			strtab;
+	char				*symname;
 	t_ft_nm_sym			*list = NULL;
+	off_t				strtab_offset;
 	char				type;
 
 	i = 0;
+	// strtab_offset = hdrinfo->offset + symtabcmd->stroff;
 	strtab = hdrinfo->offset + symtabcmd->stroff + (char *)file->content;
 	slseek(file, hdrinfo->offset + symtabcmd->symoff, SLSEEK_SET);
 	symtab = (struct nlist_64 *)file->seek_ptr;
@@ -109,7 +143,9 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 			type = get_symbol_type(nl.n_type, nl.n_sect, nl.n_value, hdrinfo);
 		if ((nl.n_type & N_EXT) && type != '?')
 		    type = toupper(type);
-		const char* symname = &strtab[nl.n_un.n_strx];
+		if (!(symname = safe_read_symname(file, strtab, nl.n_un.n_strx)))
+			exit(1);
+		//symname = &strtab[nl.n_un.n_strx];
 		append_sym(&list, nl.n_value, symname, type);
 	}
 	return (list);

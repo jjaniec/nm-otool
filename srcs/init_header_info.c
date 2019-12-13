@@ -54,12 +54,12 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 		(sizeof(struct mach_header_64)) : (sizeof(struct mach_header));
 	if ((hdrinfo->ncmds = get_ncmds(file, hdrinfo)) == 0)
 		return (NULL);
-	dprintf(2, "Init new header: magic: %u, is_be: %d, is_64: %d, offset %u, size: %zu, ncdms: %u\n", \
+	dprintf(2, "Init new header: magic: %x, is_be: %d, is_64: %d, offset %u, size: %zu, ncdms: %u\n", \
 		hdrinfo->magic, hdrinfo->is_be, hdrinfo->is_64, hdrinfo->offset, hdrinfo->machhdr_size, hdrinfo->ncmds);
 	return (hdrinfo);
 }
 
-static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t nfat_arch)
+static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t nfat_arch, uint32_t magic)
 {
 	struct fat_arch		arch;
 	uint32_t			fat_header_idx;
@@ -73,7 +73,7 @@ static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uin
 	{
 		slseek(file, sizeof(struct fat_header) + (sizeof(struct fat_arch) * fat_header_idx), SLSEEK_SET);
 		sseek_read(file, &arch, sizeof(struct fat_arch));
-		machhdr_offset = swap_32bit(arch.offset);
+		machhdr_offset = is_big_endian(magic) ? (magic) : swap_32bit(arch.offset);
 		dprintf(2, "fat_header_idx: %d / %" PRIu32 " - cur_mach_header: %p, offset: %p\n", fat_header_idx, nfat_arch, cur_mach_header, machhdr_offset);
 		if (cur_mach_header)
 		{
@@ -101,7 +101,7 @@ int					init_header_info(t_ft_nm_file *file, \
 		sseek_read(file, &nfat_arch, sizeof(uint32_t));
 		if (!is_big_endian(magic))
 			nfat_arch = swap_32bit(nfat_arch);
-		handle_fat_header(file, hdrinfo, nfat_arch);
+		handle_fat_header(file, hdrinfo, nfat_arch, magic);
 	}
 	else if (is_magic_mach(magic))
 		init_macho_header(file, hdrinfo, 0);

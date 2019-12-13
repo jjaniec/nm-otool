@@ -50,7 +50,7 @@ int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cm
 		sseek_read(file, cmd, sizeof(struct load_command));
 		if (!hdrinfo->is_be)
 			swap_byte_range(cmd, sizeof(struct load_command));
-		dprintf(2, "Load command %u seek: %ld - size: %u - .cmd %u ?= %i ?= %i\n", \
+		dprintf(2, "Load command %u seek: %x - size: %u - .cmd %u ?= %i ?= %i\n", \
 			i, file->seek_ptr - file->content, cmd->cmdsize, cmd->cmd, load_cmds[0], load_cmds[1]);
 		if ((idx = indexof_int(cmd->cmd, load_cmds, 2)) != -1)
 			return (idx);
