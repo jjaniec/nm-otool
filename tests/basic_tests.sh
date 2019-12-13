@@ -5,6 +5,7 @@ set -o nounset
 set -o verbose
 
 dirs=(
+  "$PWD/corrupted_binaries/*"
 	"/bin/*"
 	"/usr/bin/*"
 )
