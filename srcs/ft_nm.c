@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/07 19:40:11 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/13 16:41:04 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 		load_command_offset = file->seek_ptr - file->content - sizeof(struct load_command);
 		slseek(file, - sizeof(struct load_command), SLSEEK_CUR);
 		if (hdrinfo->is_64)
-			parse_cmd_sectn(file, hdrinfo, file->seek_ptr, &sect_count);
+			parse_cmd_sectn(file, hdrinfo, (struct segment_command_64 *)file->seek_ptr, &sect_count);
 		else
-			parse_cmd_sectn_32(file, hdrinfo, file->seek_ptr, &sect_count);
+			parse_cmd_sectn_32(file, hdrinfo, (struct segment_command *)file->seek_ptr, &sect_count);
 		slseek(file, load_command_offset + load_command_size, SLSEEK_SET);
 	}
 	return (0);
@@ -123,23 +123,29 @@ static void		dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist)
 	}
 }
 
+static t_ft_nm_hdrinfo	*decide_hdr_to_use(t_ft_nm_hdrinfo *hdr_list)
+{
+	
+}
+
 int				ft_nm(t_ft_nm_file *file)
 {
 	t_ft_nm_hdrinfo		hdrinfo;
+	t_ft_nm_hdrinfo		*hdr_to_use;
 	int					idx;
 	struct load_command	cmd;
 	t_ft_nm_sym			*symlist;
-	uint32_t			load_command_size;
+	// uint32_t			load_command_size;
 
 	if (init_header_info(file, &hdrinfo) == 1)
 	{
 		dprintf(2, "The file was not recognized as a valid object file\n");
 		return (1);
 	}
-	slseek(file, hdrinfo.offset + hdrinfo.machhdr_size, SLSEEK_SET);
+	slseek(file, hdrinfo.fat_offset + hdrinfo.machhdr_size, SLSEEK_SET);
 	parse_file_segment_cmds(file, &hdrinfo, &cmd);
 	dprintf(2, "text_nsect: %d - data_nsect: %d - bss_nsect: %d\n", hdrinfo.text_nsect, hdrinfo.data_nsect, hdrinfo.bss_nsect);
-	slseek(file, hdrinfo.offset + hdrinfo.machhdr_size, SLSEEK_SET);
+	slseek(file, hdrinfo.fat_offset + hdrinfo.machhdr_size, SLSEEK_SET);
 	if ((idx = goto_load_command(file, &hdrinfo, (int [3]){LC_SYMTAB, 0}, &cmd)) != -1)
 	{
 		if (hdrinfo.is_64)

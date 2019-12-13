@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/06 22:27:48 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/13 16:31:02 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,12 @@
 # include <mach-o/swap.h>
 # include <inttypes.h>
 
-# define SLSEEK_CUR		1
-# define SLSEEK_SET		2
+# define HOST_CPU_TYPE		CPU_TYPE_X86_64
+
+# define SLSEEK_CUR			1
+# define SLSEEK_SET			2
+
+# define ERR_HDR_OVERLAP	-2
 
 // struct mach_header {
 // 	uint32_t		magic;
@@ -119,8 +123,10 @@ typedef struct				s_ft_nm_file
 
 typedef struct				s_ft_nm_hdrinfo {
 	t_ft_nm_file			*file;
+	uint32_t				fat_size;
+	uint32_t				fat_align;
+	uint32_t				fat_offset;
 	uint32_t				magic;
-	uint32_t				offset;
 	bool					is_64;
 	bool					is_be; // is big endian
 	size_t					machhdr_size;
@@ -164,5 +170,7 @@ t_ft_nm_sym			*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, 
 t_ft_nm_sym			*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct symtab_command *symtabcmd);
 
 uint32_t			swap_32bit(uint32_t x);
+
+int					check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, uint32_t offset);
 
 #endif

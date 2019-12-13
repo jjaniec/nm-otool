@@ -1,28 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sseek_read.c                                       :+:      :+:    :+:   */
+/*   check_hdr_overlap.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/06 14:13:49 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 15:17:35 by jjaniec          ###   ########.fr       */
+/*   Created: 2019/12/13 15:24:52 by jjaniec           #+#    #+#             */
+/*   Updated: 2019/12/13 15:34:38 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-int			sseek_read(t_ft_nm_file *file, void *buf, unsigned int size)
+static int		align(uint32_t x, uint32_t align)
 {
-	unsigned int	i;
+	while (x % align)
+		x++;
+	return (x);
+}
 
-	i = 0;
-	while (file->seek_ptr < (file->content + file->totsiz) && i < size)
-	{
-		*((unsigned char *)buf + i) = *((unsigned char *)file->seek_ptr);
-		file->seek_ptr += 1;
-		i++;
-	}
-	// if (file->seek_ptr == file->content + )
-	return (i);
+int				check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, uint32_t offset)
+{
+	if (offset > align(hdrinfo->fat_align + hdrinfo->fat_size, hdrinfo->fat_align))
+		return (0);
+	return (1);
 }

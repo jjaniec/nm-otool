@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/07 17:54:34 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/13 16:30:48 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,8 @@ SRC_NAME = main.c \
 			goto_load_command.c \
 			build_symbol_list.c \
 			is_magic_mach.c \
-			swap_32bit.c
+			swap_32bit.c \
+			check_hdr_overlap.c
 
 HEADER_NAME = ft_nm.h
 
@@ -84,6 +85,9 @@ fclean: clean
 	@make fclean -C ft_printf/
 	@rm -f $(NAME)
 
+tests:
+	(cd tests && ./basic_tests.sh)
+
 re: fclean all
 
-.PHONY: clean fclean all re
+.PHONY: clean fclean all re tests

@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/07 19:13:01 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/13 16:39:09 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,6 @@ static t_ft_nm_sym	*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symn
 	t_ft_nm_sym		*prev;
 
 	e = *list;
-	// if (!(e && e->symname))
-	// 	return (NULL);
 	if (!(new = malloc(sizeof(t_ft_nm_sym))))
 		return (NULL);
 	new->symvalue = symvalue;
@@ -84,29 +82,18 @@ static t_ft_nm_sym	*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symn
 char			*safe_read_symname(t_ft_nm_file *file, const char *strtab_offset, unsigned int index)
 {
 	char		*symname;
-	char		symname_buf[256];
+	char		symname_buf[512];
 	int			r;
 	off_t		original_offset;
 
 	symname = NULL;
 	original_offset = file->seek_ptr - file->content;
-	// printf("aaaa %lu %lu - size: %zu - index: %u\n", &strtab_offset[index] - file->content, file->seek_ptr - file->content, file->totsiz, index);
-	// return &strtab_offset[index];
-	if (slseek(file, (off_t)(&strtab_offset[index] - file->content) /*- file->content*/, SLSEEK_SET) == -1)
-	{
-		// printf("bbb %u\n", strtab_offset);
+	if (slseek(file, (off_t)(&strtab_offset[index] - file->content), SLSEEK_SET) == -1)
 		return (symname);
-	}
-	// slseek(file, original_offset, SLSEEK_SET);
-	// return &strtab_offset[index];
-
-	if ((r = sseek_read(file, &symname_buf, 256)) != -1)
+	if ((r = sseek_read(file, &symname_buf, 512)) != -1)
 	{
 		if ((file->seek_ptr - file->content) != (long)file->totsiz)
-		{
 			symname = ft_strdup(symname_buf);
-			// slseek(file, -r, SLSEEK_CUR);
-		}
 	}
 	slseek(file, original_offset, SLSEEK_SET);
 	return (symname);
@@ -121,16 +108,15 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 	uint32_t			i;
 	struct nlist_64		*symtab;
 	struct nlist_64		nl;
-	const char*			strtab;
+	char				*strtab;
 	char				*symname;
 	t_ft_nm_sym			*list = NULL;
-	off_t				strtab_offset;
+	// off_t				strtab_offset;
 	char				type;
 
 	i = 0;
-	// strtab_offset = hdrinfo->offset + symtabcmd->stroff;
-	strtab = hdrinfo->offset + symtabcmd->stroff + (char *)file->content;
-	slseek(file, hdrinfo->offset + symtabcmd->symoff, SLSEEK_SET);
+	strtab = hdrinfo->fat_offset + symtabcmd->stroff + (char *)file->content;
+	slseek(file, hdrinfo->fat_offset + symtabcmd->symoff, SLSEEK_SET);
 	symtab = (struct nlist_64 *)file->seek_ptr;
 	while (i < symtabcmd->nsyms)
 	{
@@ -145,7 +131,6 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 		    type = toupper(type);
 		if (!(symname = safe_read_symname(file, strtab, nl.n_un.n_strx)))
 			exit(1);
-		//symname = &strtab[nl.n_un.n_strx];
 		append_sym(&list, nl.n_value, symname, type);
 	}
 	return (list);
@@ -156,13 +141,14 @@ t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo,
 	uint32_t			i;
 	struct nlist		*symtab;
 	struct nlist		nl;
-	const char*			strtab;
+	char				*strtab;
+	char				*symname;
 	t_ft_nm_sym			*list = NULL;
 	char				type;
 
 	i = 0;
-	strtab = hdrinfo->offset + symtabcmd->stroff + (char *)file->content;
-	slseek(file, hdrinfo->offset + symtabcmd->symoff, SLSEEK_SET);
+	strtab = hdrinfo->fat_offset + symtabcmd->stroff + (char *)file->content;
+	slseek(file, hdrinfo->fat_offset + symtabcmd->symoff, SLSEEK_SET);
 	symtab = (struct nlist *)file->seek_ptr;
 	while (i < symtabcmd->nsyms)
 	{
@@ -175,7 +161,7 @@ t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo,
 			type = get_symbol_type(nl.n_type, nl.n_sect, nl.n_value, hdrinfo);
 		if ((nl.n_type & N_EXT) && type != '?')
 		    type = toupper(type);
-		const char* symname = &strtab[nl.n_un.n_strx];
+		symname = &strtab[nl.n_un.n_strx];
 		append_sym(&list, nl.n_value, symname, type);
 	}
 	return (list);

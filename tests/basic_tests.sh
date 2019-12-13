@@ -10,6 +10,7 @@ dirs=(
 	"/usr/bin/*"
 )
 
+failed_count=0
 exit_code=0
 
 for dir in ${dirs[@]};
@@ -20,9 +21,12 @@ do
 		r=${?}
 		if [ ${r} -ne 0 ];
 		then
+			failed_count=$[${failed_count}+1]
 			exit_code=${r}
 		fi;
 	done;
 done;
+
+echo "${failed_count} files failed to match"
 
 exit ${exit_code}
