@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 18:39:12 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/14 17:54:57 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,15 @@
 
 # define HOST_CPU_TYPE		CPU_TYPE_X86_64
 
+
 # define SLSEEK_CUR			1
 # define SLSEEK_SET			2
 
 # define ERR_HDR_OVERLAP	-2
+
+# define ERR_FD				2
+# define ERR_PREFIX			"ft_nm: "
+# define DEBUG_FD			2
 
 // struct mach_header {
 // 	uint32_t		magic;
@@ -132,6 +137,7 @@ typedef struct				s_ft_nm_hdrinfo {
 	bool					is_be; // is big endian
 	size_t					machhdr_size;
 	uint32_t				ncmds;
+	uint32_t				sizeofcmds;
 	uint8_t					text_nsect;
 	uint8_t					data_nsect;
 	uint8_t					bss_nsect;
@@ -156,13 +162,7 @@ bool				is_magic_mach(uint32_t magic);
 
 bool				is_big_endian(uint32_t magic);
 
-void				swap_byte_range(void *bytes, size_t range);
-
 int					init_header_info(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo);
-
-int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
-
-int					slseek(t_ft_nm_file *file, int offset, int whence);
 
 int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd);
 
@@ -173,5 +173,21 @@ t_ft_nm_sym			*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 uint32_t			swap_32bit(uint32_t x);
 
 int					check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, int offset);
+
+int					check_load_commands(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo);
+
+
+/*
+** Parsing
+*/
+
+int					read_byte_range_at_pos(t_ft_nm_hdrinfo *hdrinfo, void *buffer, \
+						unsigned int size, int offset);
+
+int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
+
+int					slseek(t_ft_nm_file *file, int offset, int whence);
+
+void				swap_byte_range(void *bytes, size_t range);
 
 #endif

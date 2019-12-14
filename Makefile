@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/13 16:30:48 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/14 17:55:13 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,9 @@ SRC_NAME = main.c \
 			build_symbol_list.c \
 			is_magic_mach.c \
 			swap_32bit.c \
-			check_hdr_overlap.c
+			check_hdr_overlap.c \
+			read_byte_range_at_pos.c \
+			check_load_commands.c
 
 HEADER_NAME = ft_nm.h
 

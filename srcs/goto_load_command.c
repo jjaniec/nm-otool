@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:11:24 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 18:36:02 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/13 20:30:16 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ static int		indexof_int(int x, int *tab, unsigned int tab_size)
 
 int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd)
 {
-	off_t						seek_ptr_save;
-	uint32_t					i;
-	int							idx;
+	off_t			seek_ptr_save;
+	uint32_t		i;
+	int				idx;
 
 	i = 0;
 	while (i < hdrinfo->ncmds)
