@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/14 16:30:29 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/14 19:12:16 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,13 +90,16 @@ static char		*safe_read_symname(t_ft_nm_file *file, const char *strtab_offset, u
 	original_offset = file->seek_ptr - file->content;
 	if (slseek(file, (int)(&strtab_offset[index] - file->content), SLSEEK_SET) == -1)
 		return (symname);
-	if ((r = sseek_read(file, &symname_buf, 512)) != -1)
-	{
-		if ((file->seek_ptr - file->content) != (long)file->totsiz)
-			symname = ft_strdup(symname_buf);
-	}
-	slseek(file, original_offset, SLSEEK_SET);
-	return (symname);
+	return ((&strtab_offset[index]));
+
+	// if ((r = sseek_read(file, &symname_buf, 512)) != -1)
+	// {
+	// 	if ((file->seek_ptr - file->content) != (long)file->totsiz)
+	// 		symname = ft_strdup(symname_buf);
+	// 	dprintf(DEBUG_FD, "symname_buff: %s - symname: %s\n", symname_buf, symname);
+	// }
+	// slseek(file, original_offset, SLSEEK_SET);
+	// return (symname);
 }
 
 /*

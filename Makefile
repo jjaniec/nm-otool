@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/14 17:55:13 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/14 18:58:48 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -87,7 +87,7 @@ fclean: clean
 	@make fclean -C ft_printf/
 	@rm -f $(NAME)
 
-tests:
+tests: all
 	(cd tests && ./basic_tests.sh)
 
 re: fclean all

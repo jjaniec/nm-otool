@@ -22,8 +22,8 @@ do
 		r=${?}
 		if [ ${r} -ne 0 ];
 		then
-			echo -e "\t${i} failed to match, total: ${failed_count}"
 			failed_count=$[${failed_count}+1]
+			echo -e "\t${i} failed to match, total: ${failed_count}"
 			exit_code=${r}
 		fi;
 	done;

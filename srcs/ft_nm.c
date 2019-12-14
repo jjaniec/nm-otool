@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/14 18:01:28 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/14 19:04:45 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int		parse_cmd_sectn(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct
 		dprintf(DEBUG_FD, "LC Parsed size: %u / %u - ncmds: %u / %u\n", parsed_size, seg64->cmdsize, i, seg64->nsects);
 		section_ptr += sizeof(struct section_64);
 	}
-	if (!(i == seg64->nsects && parsed_size + sizeof(struct segment_command_64) == seg64->cmdsize))
+	if (parsed_size + sizeof(struct segment_command_64) > seg64->cmdsize || i != seg64->nsects)
 	{
 		dprintf(ERR_FD, ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n");
 		return (1);

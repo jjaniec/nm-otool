@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/14 18:31:53 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/14 19:53:34 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ static int			init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, struct fat_arch *arc
 {
 	if (arch)
 	{
-		hdrinfo->fat_offset = is_big_endian(fat_magic) ? (fat_magic) : swap_32bit(arch->offset);
-		hdrinfo->fat_align = is_big_endian(fat_magic) ? (fat_magic) : swap_32bit(arch->align);
-		hdrinfo->fat_size = is_big_endian(fat_magic) ? (fat_magic) : swap_32bit(arch->size);
+		hdrinfo->fat_offset = is_big_endian(fat_magic) ? (arch->offset) : swap_32bit(arch->offset);
+		hdrinfo->fat_align = 1 << (is_big_endian(fat_magic) ? (arch->align) : swap_32bit(arch->align));
+		hdrinfo->fat_size = is_big_endian(fat_magic) ? (arch->size) : swap_32bit(arch->size);
 	}
 	else
 	{
@@ -60,8 +60,8 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 		hdrinfo->fat_offset + ((hdrinfo->is_64) ? (__offsetof(struct mach_header_64, sizeofcmds)) : (__offsetof(struct mach_header, sizeofcmds))));
 	hdrinfo->machhdr_size = (hdrinfo->is_64) ? \
 		(sizeof(struct mach_header_64)) : (sizeof(struct mach_header));
-	dprintf(2, "Init new header: magic: %x, is_be: %d, is_64: %d, cpu_type: %u, offset %u, size: %zu, fat_size: %u, ncdms: %u - sizeofcmds: %u\n", \
-		hdrinfo->magic, hdrinfo->is_be, hdrinfo->is_64, hdrinfo->cpu_type, hdrinfo->fat_offset, hdrinfo->machhdr_size, hdrinfo->fat_size, hdrinfo->ncmds, hdrinfo->sizeofcmds);
+	dprintf(2, "Init new header: magic: %x, is_be: %d, is_64: %d, cpu_type: %u, fat_offset %u, size: %zu, fat_size: %u, fat_align: %u, ncdms: %u - sizeofcmds: %u\n", \
+		hdrinfo->magic, hdrinfo->is_be, hdrinfo->is_64, hdrinfo->cpu_type, hdrinfo->fat_offset, hdrinfo->machhdr_size, hdrinfo->fat_size, hdrinfo->fat_align, hdrinfo->ncmds, hdrinfo->sizeofcmds);
 	return (hdrinfo);
 }
 
@@ -95,6 +95,11 @@ static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uin
 		{
 			if (!(cur_mach_header = init_macho_header(file, hdrinfo, &arch, magic)))
 				return (1);
+		}
+		if (cur_mach_header->fat_offset % cur_mach_header->fat_align)
+		{
+			dprintf(ERR_FD, ERR_PREFIX "Header not aligned on it's alignment");
+			return (1);
 		}
 		fat_header_idx++;
 		dprintf(2, "fat_header_idx: %d / %" PRIu32 " - cur_mach_header: %p, offset: %x\n", fat_header_idx, nfat_arch, cur_mach_header, cur_mach_header->fat_offset);
