@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 16:48:32 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/20 17:52:28 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ static t_ft_nm_sym	*append_sym_to_list(t_ft_nm_sym **list, uint64_t symvalue, ch
 	new->n_type = n_type;
 	prev = NULL;
 	while (e && ft_strcmp(new->symname, e->symname) >= 0 && \
-		!(e->indr_name && ft_strcmp(new->symname, e->symname) == 0))
+		!(((new->symvalue < e->symvalue) || e->indr_name) && \
+		ft_strcmp(new->symname, e->symname) == 0))
 	{
 		prev = e;
 		e = e->next;
@@ -81,12 +82,14 @@ static t_ft_nm_sym	*append_sym_to_list(t_ft_nm_sym **list, uint64_t symvalue, ch
 	return (new);
 }
 
-static char	*safe_read_symname(t_ft_nm_file *file, char *strtab_offset, unsigned int index)
+static char		*safe_read_symname(t_ft_nm_file *file, char *strtab_offset, \
+				unsigned int index)
 {
 	size_t		original_offset;
 
 	original_offset = file->seek_ptr - file->content;
-	if (slseek(file, (int)(&strtab_offset[index] - file->content), SLSEEK_SET) == -1)
+	if (slseek(file, (int)(&strtab_offset[index] - file->content), \
+		SLSEEK_SET) == -1)
 		return (NULL);
 	return ((&strtab_offset[index]));
 }
@@ -96,7 +99,8 @@ static char		*get_indr_name(t_ft_nm_file *file, uint64_t n_value, char *strtab_o
 	if (n_value == 0)
 		return ("");
 	if (n_value > symtabcmd->strsize || \
-		slseek(file, (int)(&strtab_offset[n_value] - file->content), SLSEEK_SET) == -1)
+		slseek(file, (int)(&strtab_offset[n_value] - file->content), \
+		SLSEEK_SET) == -1)
 		return ("bad string index");
 	return (strtab_offset + n_value);
 }
