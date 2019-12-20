@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 16:30:07 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/20 19:56:48 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ typedef struct	s_ft_nm_sym {
 }				t_ft_nm_sym;
 
 
-int					ft_nm(t_ft_nm_file *file);
+int					ft_nm_process_file(t_ft_nm_file *file);
 
 bool				is_magic_64(uint32_t magic);
 
@@ -179,6 +179,8 @@ int					check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, int offset);
 int					check_load_commands(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo);
 
 void				dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist);
+
+int					read_file_content(char *file, char **content);
 
 /*
 ** Parsing

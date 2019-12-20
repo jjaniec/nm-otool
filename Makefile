@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/20 16:30:17 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/20 19:55:20 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,8 +14,9 @@ NAME = ft_nm
 
 UNAME_S := $(shell uname -s)
 
-SRC_NAME = main.c \
-			ft_nm.c \
+SRC_NAME = ft_nm.c \
+			ft_otool_process_file.c \
+			ft_nm_process_file.c \
 			is_magic_64.c \
 			is_big_endian.c \
 			is_magic_fat.c \
@@ -30,7 +31,8 @@ SRC_NAME = main.c \
 			check_hdr_overlap.c \
 			read_byte_range_at_pos.c \
 			check_load_commands.c \
-			dump_symlist.c
+			dump_symlist.c \
+			read_file_content.c
 
 HEADER_NAME = ft_nm.h
 

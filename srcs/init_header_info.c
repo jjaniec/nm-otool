@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 17:52:56 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/20 18:22:04 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,5 +124,6 @@ int					init_header_info(t_ft_nm_file *file, \
 	}
 	else if (is_magic_mach(magic))
 		return (init_macho_header(file, hdrinfo, NULL, magic) == NULL);
+	ft_putstr_fd("The file was not recognized as a valid object file\n", 2);
 	return (1);
 }
