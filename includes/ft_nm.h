@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/14 17:54:57 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/20 16:30:07 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,9 @@ typedef struct				s_ft_nm_hdrinfo {
 typedef struct	s_ft_nm_sym {
 	uint64_t			symvalue;
 	char				*symname;
+	char				*indr_name;
 	char				symtype;
+	uint8_t				n_type;
 	struct s_ft_nm_sym	*next;
 }				t_ft_nm_sym;
 
@@ -176,6 +178,7 @@ int					check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, int offset);
 
 int					check_load_commands(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo);
 
+void				dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist);
 
 /*
 ** Parsing

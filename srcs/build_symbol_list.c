@@ -6,13 +6,14 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/14 19:12:16 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/20 16:48:32 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static char		get_symbol_type(uint8_t type, uint8_t sect, uint64_t value, t_ft_nm_hdrinfo *hdrinfo)
+static char		get_symbol_type(uint8_t type, uint8_t sect, uint64_t value, \
+					t_ft_nm_hdrinfo *hdrinfo)
 {
 	type = type & N_TYPE;
 	if (type == N_UNDF)
@@ -37,8 +38,6 @@ static char		get_symbol_type(uint8_t type, uint8_t sect, uint64_t value, t_ft_nm
 		return ('u');
 	if (type == N_INDR)
 		return ('i');
-	// printf("Type not found: %u\n", type);
-	// fflush(stdout);
 	return ('?');
 }
 
@@ -48,7 +47,7 @@ static char		get_symbol_type(uint8_t type, uint8_t sect, uint64_t value, t_ft_nm
 ** at the start
 */
 
-static t_ft_nm_sym	*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symname, char symtype)
+static t_ft_nm_sym	*append_sym_to_list(t_ft_nm_sym **list, uint64_t symvalue, char **symname, char symtype, uint8_t n_type)
 {
 	t_ft_nm_sym		*new;
 	t_ft_nm_sym		*e;
@@ -58,10 +57,13 @@ static t_ft_nm_sym	*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symn
 	if (!(new = malloc(sizeof(t_ft_nm_sym))))
 		return (NULL);
 	new->symvalue = symvalue;
-	new->symname = symname;
+	new->symname = symname[0];
 	new->symtype = symtype;
+	new->indr_name = symname[1];
+	new->n_type = n_type;
 	prev = NULL;
-	while (e && ft_strcmp(new->symname, e->symname) >= 0)
+	while (e && ft_strcmp(new->symname, e->symname) >= 0 && \
+		!(e->indr_name && ft_strcmp(new->symname, e->symname) == 0))
 	{
 		prev = e;
 		e = e->next;
@@ -79,27 +81,24 @@ static t_ft_nm_sym	*append_sym(t_ft_nm_sym **list, uint64_t symvalue, char *symn
 	return (new);
 }
 
-static char		*safe_read_symname(t_ft_nm_file *file, const char *strtab_offset, unsigned int index)
+static char	*safe_read_symname(t_ft_nm_file *file, char *strtab_offset, unsigned int index)
 {
-	char		*symname;
-	char		symname_buf[512];
-	int			r;
 	size_t		original_offset;
 
-	symname = NULL;
 	original_offset = file->seek_ptr - file->content;
 	if (slseek(file, (int)(&strtab_offset[index] - file->content), SLSEEK_SET) == -1)
-		return (symname);
+		return (NULL);
 	return ((&strtab_offset[index]));
+}
 
-	// if ((r = sseek_read(file, &symname_buf, 512)) != -1)
-	// {
-	// 	if ((file->seek_ptr - file->content) != (long)file->totsiz)
-	// 		symname = ft_strdup(symname_buf);
-	// 	dprintf(DEBUG_FD, "symname_buff: %s - symname: %s\n", symname_buf, symname);
-	// }
-	// slseek(file, original_offset, SLSEEK_SET);
-	// return (symname);
+static char		*get_indr_name(t_ft_nm_file *file, uint64_t n_value, char *strtab_offset, struct symtab_command *symtabcmd)
+{
+	if (n_value == 0)
+		return ("");
+	if (n_value > symtabcmd->strsize || \
+		slseek(file, (int)(&strtab_offset[n_value] - file->content), SLSEEK_SET) == -1)
+		return ("bad string index");
+	return (strtab_offset + n_value);
 }
 
 /*
@@ -113,6 +112,7 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 	struct nlist_64		nl;
 	char				*strtab;
 	char				*symname;
+	char				*indr_name;
 	t_ft_nm_sym			*list = NULL;
 	char				type;
 
@@ -134,14 +134,15 @@ t_ft_nm_sym		*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, st
 			type = '-';
 		else
 			type = get_symbol_type(nl.n_type, nl.n_sect, nl.n_value, hdrinfo);
+		indr_name = (!(nl.n_type & N_STAB) && (nl.n_type & N_TYPE) == N_INDR) ? (get_indr_name(file, nl.n_value, strtab, symtabcmd)) : (NULL);
 		if ((nl.n_type & N_EXT) && type != '?')
-		    type = toupper(type);
+			type = toupper(type);
 		if (!(symname = safe_read_symname(file, strtab, nl.n_un.n_strx)))
 		{
 			dprintf(2, "Failed to read symname\n");
 			exit(1);
 		}
-		append_sym(&list, nl.n_value, symname, type);
+		append_sym_to_list(&list, nl.n_value, (char *[2]){symname, indr_name}, type, nl.n_type);
 	}
 	return (list);
 }
@@ -153,6 +154,7 @@ t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo,
 	struct nlist		nl;
 	char				*strtab;
 	char				*symname;
+	char				*indr_name;
 	t_ft_nm_sym			*list = NULL;
 	char				type;
 
@@ -174,6 +176,7 @@ t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo,
 			type = '-';
 		else
 			type = get_symbol_type(nl.n_type, nl.n_sect, nl.n_value, hdrinfo);
+		indr_name = (!(nl.n_type & N_STAB) && (nl.n_type & N_TYPE) == N_INDR) ? (get_indr_name(file, nl.n_value, strtab, symtabcmd)) : (NULL);
 		if ((nl.n_type & N_EXT) && type != '?')
 		    type = toupper(type);
 		if (!(symname = safe_read_symname(file, strtab, nl.n_un.n_strx)))
@@ -181,7 +184,7 @@ t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo,
 			dprintf(2, "Failed to read symname\n");
 			exit(1);
 		}
-		append_sym(&list, nl.n_value, symname, type);
+		append_sym_to_list(&list, nl.n_value, (char *[2]){symname, indr_name}, type, nl.n_type);
 	}
 	return (list);
 }

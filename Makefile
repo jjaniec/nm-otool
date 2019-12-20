@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/14 18:58:48 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/20 16:30:17 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,8 @@ SRC_NAME = main.c \
 			swap_32bit.c \
 			check_hdr_overlap.c \
 			read_byte_range_at_pos.c \
-			check_load_commands.c
+			check_load_commands.c \
+			dump_symlist.c
 
 HEADER_NAME = ft_nm.h
 

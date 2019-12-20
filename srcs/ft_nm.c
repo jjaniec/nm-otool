@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/14 19:04:45 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/20 16:29:16 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,34 +106,6 @@ static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 		slseek(file, load_command_offset + load_command_size, SLSEEK_SET);
 	}
 	return (0);
-}
-
-/*
-** Loop through syms and output with the correct format
-*/
-
-static void		dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist)
-{
-	t_ft_nm_sym		*s;
-
-	s = symlist;
-	while (s)
-	{
-		if (s->symtype != '-')
-		{
-			if (hdrinfo->is_64)
-				ft_printf((s->symvalue != 0) ? \
-					("%016" PRIx64 " %c %s\n") : ("%16c %c %s\n"), \
-					(s->symvalue) ? (s->symvalue) : (' '), \
-					s->symtype, s->symname);
-			else
-				ft_printf((s->symvalue != 0) ? \
-					("%08" PRIx64 " %c %s\n") : ("%8c %c %s\n"), \
-					(s->symvalue) ? (s->symvalue) : (' '), \
-					s->symtype, s->symname);
-		}
-		s = s->next;
-	}
 }
 
 static t_ft_nm_hdrinfo	*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, cpu_type_t target_type)

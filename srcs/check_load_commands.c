@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 20:29:00 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/14 18:28:09 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/20 15:59:43 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ static int		check_load_commands_64(t_ft_nm_file *file, \
 	uint32_t			cmdsize;
 	uint32_t			parsed_ncmds;
 	uint32_t			parsed_sizeofcmds;
-	uint32_t			seek_ptr_save;
 
+	(void)file;
 	parsed_ncmds = 0;
 	parsed_sizeofcmds = 0;
 	while (parsed_ncmds < hdrinfo->ncmds && \
