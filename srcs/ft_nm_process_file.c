@@ -6,7 +6,7 @@
 /*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/21 15:15:08 by joffreyjani      ###   ########.fr       */
+/*   Updated: 2019/12/21 19:43:12 by joffreyjani      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 
 	sect_count = 0;
 	slseek(file, hdrinfo->fat_offset + hdrinfo->machhdr_size, SLSEEK_SET);
-	while ((idx = goto_load_command(file, hdrinfo, (int [3]){LC_SEGMENT, LC_SEGMENT_64}, cmd)) != -1)
+	while ((idx = goto_load_command(file, hdrinfo, (uint32_t [3]){LC_SEGMENT, LC_SEGMENT_64}, cmd)) != -1)
 	{
 		load_command_size = cmd->cmdsize;
 		load_command_offset = file->seek_ptr - file->content - sizeof(struct load_command);
@@ -134,7 +134,7 @@ int				ft_nm_process_file(t_ft_nm_file *file)
 		return (1);
 	dprintf(DEBUG_FD, "text_nsect: %d - data_nsect: %d - bss_nsect: %d\n", hdr_to_use->text_nsect, hdr_to_use->data_nsect, hdr_to_use->bss_nsect);
 	slseek(file, hdr_to_use->fat_offset + hdr_to_use->machhdr_size, SLSEEK_SET);
-	if ((idx = goto_load_command(file, hdr_to_use, (int [3]){LC_SYMTAB, 0}, &cmd)) != -1)
+	if ((idx = goto_load_command(file, hdr_to_use, (uint32_t [3]){LC_SYMTAB, 0}, &cmd)) != -1)
 	{
 		if (hdr_to_use->is_64)
 			symlist = build_symbol_list(\

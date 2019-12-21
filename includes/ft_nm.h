@@ -6,7 +6,7 @@
 /*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/21 15:19:58 by joffreyjani      ###   ########.fr       */
+/*   Updated: 2019/12/21 19:42:24 by joffreyjani      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ bool				is_big_endian(uint32_t magic);
 
 int					init_header_info(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo);
 
-int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd);
+int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t load_cmds[2], struct load_command *cmd);
 
 t_ft_nm_sym			*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, struct symtab_command *symtabcmd);
 
@@ -209,7 +209,7 @@ void				swap_byte_range(void *bytes, size_t range);
 
 typedef struct	s_ft_otool_sect {
 	uint32_t			size;
-	uint32_t			address;
+	uint64_t			address;
 	uint32_t			offset;
 	t_ft_nm_hdrinfo		*hdr;
 }				t_ft_otool_sect;

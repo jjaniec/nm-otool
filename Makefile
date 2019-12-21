@@ -6,15 +6,15 @@
 #    By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/21 15:41:19 by joffreyjani      ###   ########.fr        #
+#    Updated: 2019/12/21 15:43:49 by joffreyjani      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ft_nm
 
 UNAME_S := $(shell uname -s)
-
-SRC_NAME = ft_nm.c \
+ 
+SRC_NAME = ft_otool.c \
 			ft_otool_process_file.c \
 			ft_nm_process_file.c \
 			is_magic_64.c \

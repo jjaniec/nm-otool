@@ -18,7 +18,7 @@ for dir in ${dirs[@]};
 do
 	for i in ${dir};
 	do
-		DIFF_NM_PAGER=cat ./diff_nm.sh ${i}
+		DIFF_NM_PAGER=cat ./diff_otool.sh ${i}
 		r=${?}
 		if [ ${r} -ne 0 ];
 		then

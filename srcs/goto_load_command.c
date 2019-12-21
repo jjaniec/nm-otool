@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   goto_load_command.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
+/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:11:24 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 20:30:16 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/21 19:43:46 by joffreyjani      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 ** return found index or -1 if x is not in tab
 */
 
-static int		indexof_int(int x, int *tab, unsigned int tab_size)
+static int		indexof_uint(uint32_t x, uint32_t *tab, unsigned int tab_size)
 {
 	unsigned int	i;
 
@@ -37,7 +37,7 @@ static int		indexof_int(int x, int *tab, unsigned int tab_size)
 ** & fill cmd struct
 */
 
-int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cmds[2], struct load_command *cmd)
+int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t load_cmds[2], struct load_command *cmd)
 {
 	off_t			seek_ptr_save;
 	uint32_t		i;
@@ -50,9 +50,9 @@ int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, int load_cm
 		sseek_read(file, cmd, sizeof(struct load_command));
 		if (!hdrinfo->is_be)
 			swap_byte_range(cmd, sizeof(struct load_command));
-		dprintf(2, "Load command %u seek: %lx - size: %u - .cmd %u ?= %i ?= %i\n", \
+		dprintf(2, "Load command %u seek: %lx - size: %u - .cmd %u ?= %u ?= %u\n", \
 			i, file->seek_ptr - file->content, cmd->cmdsize, cmd->cmd, load_cmds[0], load_cmds[1]);
-		if ((idx = indexof_int(cmd->cmd, load_cmds, 2)) != -1)
+		if ((idx = indexof_uint(cmd->cmd, load_cmds, 2)) != -1)
 			return (idx);
 		slseek(file, seek_ptr_save + \
 			cmd->cmdsize, \
