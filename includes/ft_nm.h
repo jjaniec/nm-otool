@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nm.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
+/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 19:56:48 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/21 15:19:58 by joffreyjani      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,36 +121,37 @@
 
 typedef struct				s_ft_nm_file
 {
-	int						totsiz;
+	char					*filepath;
 	char					*seek_ptr;
 	char					*content;
+	int						totsiz;
 }							t_ft_nm_file;
 
 typedef struct				s_ft_nm_hdrinfo {
 	t_ft_nm_file			*file;
+	struct s_ft_nm_hdrinfo	*next;
 	uint32_t				fat_size;
 	uint32_t				fat_align;
 	uint32_t				fat_offset;
 	uint32_t				magic;
 	cpu_type_t				cpu_type;
-	bool					is_64;
-	bool					is_be; // is big endian
 	size_t					machhdr_size;
 	uint32_t				ncmds;
 	uint32_t				sizeofcmds;
 	uint8_t					text_nsect;
 	uint8_t					data_nsect;
 	uint8_t					bss_nsect;
-	struct s_ft_nm_hdrinfo	*next;
+	bool					is_64;
+	bool					is_be; // is big endian
 }							t_ft_nm_hdrinfo;
 
 typedef struct	s_ft_nm_sym {
+	struct s_ft_nm_sym	*next;
 	uint64_t			symvalue;
 	char				*symname;
 	char				*indr_name;
-	char				symtype;
 	uint8_t				n_type;
-	struct s_ft_nm_sym	*next;
+	char				symtype;
 }				t_ft_nm_sym;
 
 
@@ -182,6 +183,9 @@ void				dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist);
 
 int					read_file_content(char *file, char **content);
 
+t_ft_nm_hdrinfo		*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, cpu_type_t target_type);
+
+
 /*
 ** Parsing
 */
@@ -194,5 +198,22 @@ int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
 int					slseek(t_ft_nm_file *file, int offset, int whence);
 
 void				swap_byte_range(void *bytes, size_t range);
+
+
+
+
+
+/*
+** otool
+*/
+
+typedef struct	s_ft_otool_sect {
+	uint32_t			size;
+	uint32_t			address;
+	uint32_t			offset;
+	t_ft_nm_hdrinfo		*hdr;
+}				t_ft_otool_sect;
+
+
 
 #endif

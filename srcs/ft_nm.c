@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nm.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
+/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:19 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 19:56:18 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/21 15:20:14 by joffreyjani      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,6 @@ int					main(int ac, char **av)
 	dprintf(2, "Read file total size: %d\n", file.totsiz);
 	file.content = file_content;
 	file.seek_ptr = file.content;
+	file.filepath = file_path;
 	return (ft_nm_process_file(&file));
 }

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
+#    By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/20 19:55:20 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/21 15:41:19 by joffreyjani      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,8 @@ SRC_NAME = ft_nm.c \
 			read_byte_range_at_pos.c \
 			check_load_commands.c \
 			dump_symlist.c \
-			read_file_content.c
+			read_file_content.c \
+			goto_hdr_cpu_type.c
 
 HEADER_NAME = ft_nm.h
 

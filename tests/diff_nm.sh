@@ -15,8 +15,9 @@ then
 	else
 		diff -y ${tmp1} ${tmp2} | ${DIFF_NM_PAGER}
 	fi;
-else
-	echo "${1} OK"
+elif [ "${VERBOSE}" != "0" ];
+then
+  echo "${1} OK"
 	rm ${tmp1} ${tmp2}
 fi
 

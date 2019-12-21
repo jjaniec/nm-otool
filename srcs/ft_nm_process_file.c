@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nm_process_file.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
+/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 18:57:20 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/21 15:15:08 by joffreyjani      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,16 +114,6 @@ static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 		slseek(file, load_command_offset + load_command_size, SLSEEK_SET);
 	}
 	return (0);
-}
-
-static t_ft_nm_hdrinfo	*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, cpu_type_t target_type)
-{
-	t_ft_nm_hdrinfo		*h;
-
-	h = hdr_list;
-	while (h && h->cpu_type != target_type)
-		h = h->next;
-	return (h);
 }
 
 int				ft_nm_process_file(t_ft_nm_file *file)

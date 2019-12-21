@@ -41,4 +41,4 @@ matrix:
       env: CXX=clang
 script:
   - make
-  - (cd tests && ./basic_tests.sh)
+  - VERBOSE=0 make tests

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dump_symlist.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
+/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 16:29:19 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 16:44:55 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/21 15:21:44 by joffreyjani      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,6 @@ static bool		should_print_address(t_ft_nm_sym *s)
 		(s->n_type & N_TYPE) == N_SECT)
 		return (true);
 	return (false);
-	// return ((s->symvalue || (
-	// 			(s->n_type & N_TYPE) == N_ABS || \
-	// 			(s->n_type & N_TYPE) == N_SECT)
-	// 		) && \
-	// 		!s->indr_name);
 }
 
 static void		print_address(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *s)
@@ -56,16 +51,6 @@ void		dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist)
 	{
 		if (s->symtype != '-')
 		{
-			// if (hdrinfo->is_64)
-			// 	ft_printf((s->symvalue && !s->indr_name) ? \
-			// 		("%016" PRIx64 " %c %s") : ("%16c %c %s"), \
-			// 		(s->symvalue && !s->indr_name) ? (s->symvalue) : (' '), \
-			// 		s->symtype, s->symname);
-			// else
-			// 	ft_printf((s->symvalue && !s->indr_name) ? \
-			// 		("%08" PRIx64 " %c %s") : ("%8c %c %s"), \
-			// 		(s->symvalue && !s->indr_name) ? (s->symvalue) : (' '), 
-			// if (should_print_address(s))
 			print_address(hdrinfo, s);
 			ft_printf(" %c %s", s->symtype, s->symname);
 			if (s->indr_name)

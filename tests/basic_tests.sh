@@ -9,7 +9,6 @@ dirs=(
 	"/bin/*"
 	"/usr/bin/*"
 	"/usr/lib/*"
-	"/usr/local/bin/*"
 )
 
 failed_count=0
