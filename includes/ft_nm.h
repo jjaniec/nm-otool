@@ -214,6 +214,6 @@ typedef struct	s_ft_otool_sect {
 	t_ft_nm_hdrinfo		*hdr;
 }				t_ft_otool_sect;
 
-
+int						ft_otool_process_file(t_ft_nm_file *file);
 
 #endif

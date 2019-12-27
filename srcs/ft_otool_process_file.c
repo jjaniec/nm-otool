@@ -77,7 +77,7 @@ static t_ft_otool_sect	*search_sect(t_ft_nm_hdrinfo *hdrinfo, struct segment_com
 
 	i = 0;
 	parsed_size = 0;
-	// dprintf(DEBUG_FD, "Segname64: %s\n", seg->segname);
+	// section_ptr = (void *)seg + ((hdrinfo->is_64) ? (sizeof(struct segment_command_64)) : (sizeof(struct segment_command)));
 	section_ptr = (void *)( (hdrinfo->is_64) ? (seg + 1) : ((struct segment_command *)seg + 1));
 	while (i < (hdrinfo->is_64) ? (seg->nsects) : (((struct segment_command *)seg)->nsects) && \
 		parsed_size < ((hdrinfo->is_64) ? (seg->cmdsize) : (((struct segment_command *)seg))->cmdsize))
@@ -112,7 +112,7 @@ static t_ft_otool_sect	*get_text_sect_offset(t_ft_nm_hdrinfo *hdrinfo)
 		load_command_size = cmd.cmdsize;
 		load_command_offset = hdrinfo->file->seek_ptr - hdrinfo->file->content - sizeof(struct load_command);
 		slseek(hdrinfo->file, - ((int)sizeof(struct load_command)), SLSEEK_CUR);
-		if (text_sect = search_sect(hdrinfo, hdrinfo->file->seek_ptr, SECT_TEXT, SEG_TEXT))
+		if ((text_sect = search_sect(hdrinfo, (void *)hdrinfo->file->seek_ptr, SECT_TEXT, SEG_TEXT)))
 		{
 			text_sect->hdr = hdrinfo;
 			break ;
@@ -132,7 +132,10 @@ static int				dump_text_section(t_ft_nm_hdrinfo *hdrinfo, t_ft_otool_sect *text_
 	ft_printf("%s:\nContents of (__TEXT,__text) section\n", hdrinfo->file->filepath);
 	while (n < text_section->size)
 	{
-		ft_printf("%016" PRIx64 "%c", text_section->address + n, '\t');
+		if (hdrinfo->is_64)
+			ft_printf("%016" PRIx64 "%c", text_section->address + n, '\t');
+		else
+			ft_printf("%08" PRIx32 "%c", text_section->address + n, '\t');
 		byte_n = 0;
 		while (byte_n < 16 && n + byte_n < text_section->size)
 		{

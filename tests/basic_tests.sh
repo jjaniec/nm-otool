@@ -18,8 +18,10 @@ for dir in ${dirs[@]};
 do
 	for i in ${dir};
 	do
-		DIFF_NM_PAGER=cat ./diff_otool.sh ${i}
+		DIFF_NM_PAGER=cat ./diff_nm.sh ${i}
 		r=${?}
+		DIFF_NM_PAGER=cat ./diff_otool.sh ${i}
+		r=$[${r}+1]
 		if [ ${r} -ne 0 ];
 		then
 			failed_count=$[${failed_count}+1]
