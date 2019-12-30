@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nm_process_file.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
+/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/21 19:43:12 by joffreyjani      ###   ########.fr       */
+/*   Updated: 2019/12/30 13:48:32 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int		parse_cmd_sectn(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct
 	}
 	if (parsed_size + sizeof(struct segment_command_64) > seg64->cmdsize || i != seg64->nsects)
 	{
-		dprintf(ERR_FD, ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n");
+		dprintf(ERR_FD, NM_ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n");
 		return (1);
 	}
 	return (0);
@@ -83,7 +83,7 @@ static int		parse_cmd_sectn_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, str
 	}
 	if (parsed_size + sizeof(struct segment_command_64) > seg32->cmdsize || i != seg32->nsects)
 	{
-		ft_putstr_fd(ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n", ERR_FD);
+		ft_putstr_fd(NM_ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n", ERR_FD);
 		return (1);
 	}
 	return (0);

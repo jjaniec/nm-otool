@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nm.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
+/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/21 19:42:24 by joffreyjani      ###   ########.fr       */
+/*   Updated: 2019/12/30 13:47:44 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@
 # define ERR_HDR_OVERLAP	-2
 
 # define ERR_FD				2
-# define ERR_PREFIX			"ft_nm: "
+# define OTOOL_ERR_PREFIX	"ft_otool: "
+# define NM_ERR_PREFIX		"ft_nm: "
 # define DEBUG_FD			2
 
 // struct mach_header {
@@ -124,7 +125,7 @@ typedef struct				s_ft_nm_file
 	char					*filepath;
 	char					*seek_ptr;
 	char					*content;
-	int						totsiz;
+	int64_t					totsiz;
 }							t_ft_nm_file;
 
 typedef struct				s_ft_nm_hdrinfo {

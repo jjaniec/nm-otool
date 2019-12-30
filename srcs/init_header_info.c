@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/20 18:22:04 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/30 14:10:47 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int			init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, struct fat_arch *arc
 	{
 		hdrinfo->fat_offset = 0;
 		hdrinfo->fat_align = 0;
-		hdrinfo->fat_size = 0;
+		hdrinfo->fat_size = hdrinfo->file->totsiz;
 	}
 	return (0);
 }
@@ -34,6 +34,7 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 {
 	uint32_t			magic;
 
+	hdrinfo->file = file;
 	init_fat_arch_values(hdrinfo, arch, start_magic);
 	if (arch)
 	{
@@ -46,7 +47,6 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	sseek_read(file, &(hdrinfo->cpu_type), sizeof(cpu_type_t));
 	if (hdrinfo->is_be)
 		swap_byte_range(&(hdrinfo->cpu_type), sizeof(cpu_type_t));
-	hdrinfo->file = file;
 	hdrinfo->is_64 = is_magic_64(magic);
 	hdrinfo->is_be = is_big_endian(magic);
 	hdrinfo->magic = magic;
@@ -98,7 +98,7 @@ static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uin
 		}
 		if (cur_mach_header->fat_offset % cur_mach_header->fat_align)
 		{
-			dprintf(ERR_FD, ERR_PREFIX "Header not aligned on it's alignment");
+			dprintf(ERR_FD, "Header not aligned on it's alignment");
 			return (1);
 		}
 		fat_header_idx++;

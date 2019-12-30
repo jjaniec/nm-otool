@@ -2,7 +2,7 @@ tmp1=$(mktemp)
 tmp2=$(mktemp)
 
 ../ft_otool ${1} > ${tmp1} 2> /dev/null
-otool -t ${1} > ${tmp2} 2> /dev/null
+otool -t ${1} > ${tmp2} 2> /dev/null | grep "\t"
 diff ${tmp1} ${tmp2} > /dev/null 2>&1
 r=$?
 if [ ${r} -ne 0 ];

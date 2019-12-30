@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+         #
+#    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/21 15:43:49 by joffreyjani      ###   ########.fr        #
+#    Updated: 2019/12/28 17:05:56 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -106,7 +106,7 @@ ifeq ($(UNAME_S),Darwin)
 	@$(CC) $(CFLAGS) $(LFLAGS) $(OTOOL_OBJ) -o $(NAME_OTOOL)
 endif
 
-$(OBJ_DIR)%.o : $(SRC_DIR)%.c $(INCLUDES_DIR)/$(HEADER_NAME)
+$(OBJ_DIR)%.o : $(SRC_DIR)%.c $(INCLUDES_DIR)/$(HEADERS_NAME)
 	@mkdir -p $(OBJ_DIR)
 	@gcc $(CFLAGS) -c $(IFLAGS) $< -o $@ && $(call ui_line, $@, $(CURRENT_NAME))
 
