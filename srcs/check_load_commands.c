@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 20:29:00 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 14:15:29 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/30 21:04:09 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,11 @@
 static int		check_segment_command_64(t_ft_nm_hdrinfo *hdrinfo, \
 					struct segment_command_64 *seg, uint32_t *parsed_filesize)
 {
-	if (seg->fileoff != *parsed_filesize)
+	if ((seg->fileoff - *parsed_filesize) % 4096)
 	{
 		ft_putstr_fd("Inconsistent file offsets / sizes in segment_command_64\n", 2);
 		return (1);
 	}
-	// dprintf(2, "Section nsects / size : %u / %u\n", seg->nsects, sizeof(struct section_64));
 	if (seg->cmdsize < (sizeof(struct segment_command_64) + seg->nsects * sizeof(struct section_64)))
 	{
 		ft_putstr_fd("Inconsistent cmdsize in LC_SEGMENT_64 for the number of sections\n", 2);
@@ -90,14 +89,13 @@ static int		check_load_commands_64(t_ft_nm_file *file, \
 		}
 	}
 	dprintf(DEBUG_FD, "Parsed ncmds: %u / %u - parsed_size: %u / %u - parsed_filesize: %u / %u / %u\n", parsed_ncmds, hdrinfo->ncmds, parsed_sizeofcmds, hdrinfo->sizeofcmds, parsed_filesize, hdrinfo->file->totsiz, hdrinfo->fat_size);
-	if (parsed_filesize != hdrinfo->fat_size && \
-		parsed_filesize != hdrinfo->fat_size - 1)
+	if (!(parsed_filesize <= hdrinfo->fat_size))
 	{
 		ft_putstr_fd("Inconsistent file offsets / sizes in segment commands\n", 2);
 		return (2);
 	}
 	return (!(parsed_ncmds == hdrinfo->ncmds && \
-			parsed_sizeofcmds == hdrinfo->sizeofcmds));
+			parsed_sizeofcmds <= hdrinfo->sizeofcmds));
 }
 
 int			check_load_commands(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo)

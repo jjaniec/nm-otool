@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 13:48:32 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/30 16:08:31 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int				ft_nm_process_file(t_ft_nm_file *file)
 	struct load_command	cmd;
 	t_ft_nm_sym			*symlist;
 
-	if (init_header_info(file, &hdrs) == 1)
+	if (init_header_info(file, &hdrs) >= 1)
 		return (1);
 	if (!(hdr_to_use = goto_hdr_cpu_type(&hdrs, HOST_CPU_TYPE)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_X86)) && \

@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/28 17:05:56 by jjaniec          ###   ########.fr        #
+#    Updated: 2019/12/30 17:13:58 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -124,8 +124,13 @@ fclean: clean
 	@make fclean -C ft_printf/
 	@rm -f $(NAME_NM) $(NAME_OTOOL)
 
-tests: all
-	(cd tests && ./basic_tests.sh)
+tests_nm: $(NAME_NM)
+	(cd tests && ./basic_tests.sh nm)
+
+tests_otool: $(NAME_OTOOL)
+	(cd tests && ./basic_tests.sh otool)
+
+tests: all tests_nm tests_otool
 
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 14:10:47 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/31 00:06:03 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,12 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	slseek(file, hdrinfo->fat_offset + sizeof(uint32_t), SLSEEK_SET);
 	sseek_read(file, &(hdrinfo->cpu_type), sizeof(cpu_type_t));
 	if (hdrinfo->is_be)
-		swap_byte_range(&(hdrinfo->cpu_type), sizeof(cpu_type_t));
+		hdrinfo->cpu_type = swap_32bit(hdrinfo->cpu_type);
+	sseek_read(file, &(hdrinfo->cpu_subtype), sizeof(cpu_subtype_t));
+	if (hdrinfo->is_be)
+		hdrinfo->cpu_subtype = swap_32bit(hdrinfo->cpu_subtype);
+	// read_byte_range_at_pos(hdrinfo, &hdrinfo->cpu_subtype, sizeof(cpu_subtype_t), \
+	// 	hdrinfo->fat_offset + ((hdrinfo->is_64) ? (__offsetof(struct mach_header_64, cpusubtype)) : (__offsetof(struct mach_header, cpusubtype))));
 	hdrinfo->is_64 = is_magic_64(magic);
 	hdrinfo->is_be = is_big_endian(magic);
 	hdrinfo->magic = magic;
@@ -60,8 +65,8 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 		hdrinfo->fat_offset + ((hdrinfo->is_64) ? (__offsetof(struct mach_header_64, sizeofcmds)) : (__offsetof(struct mach_header, sizeofcmds))));
 	hdrinfo->machhdr_size = (hdrinfo->is_64) ? \
 		(sizeof(struct mach_header_64)) : (sizeof(struct mach_header));
-	dprintf(2, "Init new header: magic: %x, is_be: %d, is_64: %d, cpu_type: %u, fat_offset %u, size: %zu, fat_size: %u, fat_align: %u, ncdms: %u - sizeofcmds: %u\n", \
-		hdrinfo->magic, hdrinfo->is_be, hdrinfo->is_64, hdrinfo->cpu_type, hdrinfo->fat_offset, hdrinfo->machhdr_size, hdrinfo->fat_size, hdrinfo->fat_align, hdrinfo->ncmds, hdrinfo->sizeofcmds);
+	dprintf(2, "Init new header: magic: %x, is_be: %d, is_64: %d, cpu_type: %u, subtype: %x / %u, fat_offset %u, size: %zu, fat_size: %u, fat_align: %u, ncdms: %u - sizeofcmds: %u\n", \
+		hdrinfo->magic, hdrinfo->is_be, hdrinfo->is_64, hdrinfo->cpu_type, (hdrinfo->cpu_subtype & 0xf), CPU_SUBTYPE_X86_64_ALL, hdrinfo->fat_offset, hdrinfo->machhdr_size, hdrinfo->fat_size, hdrinfo->fat_align, hdrinfo->ncmds, hdrinfo->sizeofcmds);
 	return (hdrinfo);
 }
 
@@ -86,7 +91,7 @@ static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uin
 			if (check_hdr_overlap(cur_mach_header, (uint32_t)file->seek_ptr))
 			{
 				dprintf(2, "Overlap of previous header\n");
-				return (1);
+				return (2);
 			}
 			cur_mach_header->next = new_mach_header;
 			cur_mach_header = new_mach_header;
@@ -99,7 +104,7 @@ static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uin
 		if (cur_mach_header->fat_offset % cur_mach_header->fat_align)
 		{
 			dprintf(ERR_FD, "Header not aligned on it's alignment");
-			return (1);
+			return (2);
 		}
 		fat_header_idx++;
 		dprintf(2, "fat_header_idx: %d / %" PRIu32 " - cur_mach_header: %p, offset: %x\n", fat_header_idx, nfat_arch, cur_mach_header, cur_mach_header->fat_offset);

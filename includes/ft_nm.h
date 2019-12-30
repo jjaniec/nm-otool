@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 13:47:44 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/30 23:15:58 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,7 @@ typedef struct				s_ft_nm_hdrinfo {
 	uint32_t				fat_offset;
 	uint32_t				magic;
 	cpu_type_t				cpu_type;
+	cpu_subtype_t			cpu_subtype;
 	size_t					machhdr_size;
 	uint32_t				ncmds;
 	uint32_t				sizeofcmds;

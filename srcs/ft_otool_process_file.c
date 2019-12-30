@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:20:25 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 14:01:30 by jjaniec          ###   ########.fr       */
+/*   Updated: 2019/12/30 23:14:49 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ static int				dump_text_section(t_ft_nm_hdrinfo *hdrinfo, t_ft_otool_sect *text_
 	char				byte_val;
 
 	n = 0;
-	ft_printf("%s:\nContents of (__TEXT,__text) section\n", hdrinfo->file->filepath);
+	ft_putstr_fd("Contents of (__TEXT,__text) section\n", STDOUT_FILENO);
 	while (n < text_section->size)
 	{
 		if (hdrinfo->is_64)
@@ -115,20 +115,27 @@ int						ft_otool_process_file(t_ft_nm_file *file)
 	t_ft_nm_hdrinfo		hdrs;
 	t_ft_nm_hdrinfo		*hdr_to_use;
 	t_ft_otool_sect		*text_section;
+	int					r;
 
-	if (init_header_info(file, &hdrs) == 1)
+	if ((r = init_header_info(file, &hdrs)))
 	{
-		ft_putstr_fd(file->filepath, 1);
-		ft_putstr_fd(": is not an object file\n", 1);
+		// if (r == 1)
+		// {
+			// ft_putstr_fd(file->filepath, 1);
+			// ft_putstr_fd(": is not an object file\n", 1);
+			// fflush(stdout);
 		return (1);
 	}
 	if (!(hdr_to_use = goto_hdr_cpu_type(&hdrs, HOST_CPU_TYPE)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_X86)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_I386)))
 		return (1);
-	if (check_load_commands(file, hdr_to_use) || \
-		!((text_section = get_text_sect_offset(hdr_to_use))))
+	if (check_load_commands(file, hdr_to_use))
 		return (1);
+	ft_putstr_fd(file->filepath, STDOUT_FILENO);
+	ft_putstr_fd(":\n", STDOUT_FILENO);
+	if (!((text_section = get_text_sect_offset(hdr_to_use))))
+		return (0);
 	if (slseek(file, hdr_to_use->fat_offset + text_section->offset, SLSEEK_SET) == -1)
 		return (1);
 	dump_text_section(hdr_to_use, text_section);
