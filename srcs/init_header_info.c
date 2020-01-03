@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/31 00:06:03 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/03 18:52:31 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,17 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	}
 	else
 		magic = start_magic;
+	hdrinfo->is_64 = is_magic_64(magic);
+	hdrinfo->is_be = is_big_endian(magic);
 	slseek(file, hdrinfo->fat_offset + sizeof(uint32_t), SLSEEK_SET);
 	sseek_read(file, &(hdrinfo->cpu_type), sizeof(cpu_type_t));
-	if (hdrinfo->is_be)
+	if (!hdrinfo->is_be)
 		hdrinfo->cpu_type = swap_32bit(hdrinfo->cpu_type);
 	sseek_read(file, &(hdrinfo->cpu_subtype), sizeof(cpu_subtype_t));
-	if (hdrinfo->is_be)
+	if (!hdrinfo->is_be)
 		hdrinfo->cpu_subtype = swap_32bit(hdrinfo->cpu_subtype);
 	// read_byte_range_at_pos(hdrinfo, &hdrinfo->cpu_subtype, sizeof(cpu_subtype_t), \
 	// 	hdrinfo->fat_offset + ((hdrinfo->is_64) ? (__offsetof(struct mach_header_64, cpusubtype)) : (__offsetof(struct mach_header, cpusubtype))));
-	hdrinfo->is_64 = is_magic_64(magic);
-	hdrinfo->is_be = is_big_endian(magic);
 	hdrinfo->magic = magic;
 	hdrinfo->text_nsect = 0;
 	hdrinfo->data_nsect = 0;

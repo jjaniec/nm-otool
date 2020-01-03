@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nm.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
+/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:19 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/21 15:20:14 by joffreyjani      ###   ########.fr       */
+/*   Updated: 2020/01/01 18:42:20 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int					main(int ac, char **av)
 	file_path = check_args(ac, av);
 	if ((file.totsiz = read_file_content(file_path, &file_content)) == -1)
 		return (1);
-	dprintf(2, "Read file total size: %d\n", file.totsiz);
+	dprintf(2, "Read file total size: %d, %zu\n", file.totsiz, sizeof(struct nlist_64));
 	file.content = file_content;
 	file.seek_ptr = file.content;
 	file.filepath = file_path;

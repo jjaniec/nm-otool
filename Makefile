@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2019/12/30 17:13:58 by jjaniec          ###   ########.fr        #
+#    Updated: 2020/01/03 18:18:41 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ UNAME_S := $(shell uname -s)
 
 NM_SRC_NAME = 	ft_nm.c \
 				ft_nm_process_file.c \
+				free_symbol_list.c \
 				is_magic_64.c \
 				is_big_endian.c \
 				is_magic_fat.c \
@@ -37,6 +38,8 @@ NM_SRC_NAME = 	ft_nm.c \
 
 OTOOL_SRC_NAME =	ft_otool.c \
 					ft_otool_process_file.c \
+					free_symbol_list.c \
+					build_symbol_list.c \
 					is_magic_64.c \
 					is_big_endian.c \
 					is_magic_fat.c \

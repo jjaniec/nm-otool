@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:20:25 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 23:14:49 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/03 18:54:02 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,23 +115,19 @@ int						ft_otool_process_file(t_ft_nm_file *file)
 	t_ft_nm_hdrinfo		hdrs;
 	t_ft_nm_hdrinfo		*hdr_to_use;
 	t_ft_otool_sect		*text_section;
+	t_ft_nm_sym			*syms;
 	int					r;
 
-	if ((r = init_header_info(file, &hdrs)))
-	{
-		// if (r == 1)
-		// {
-			// ft_putstr_fd(file->filepath, 1);
-			// ft_putstr_fd(": is not an object file\n", 1);
-			// fflush(stdout);
+	if ((r = init_header_info(file, &hdrs)) >= 1)
 		return (1);
-	}
 	if (!(hdr_to_use = goto_hdr_cpu_type(&hdrs, HOST_CPU_TYPE)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_X86)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_I386)))
 		return (1);
-	if (check_load_commands(file, hdr_to_use))
+	if (check_load_commands(file, hdr_to_use) || \
+		!(syms = build_symbol_list(hdr_to_use, false)))
 		return (1);
+	free_symbol_list(syms);
 	ft_putstr_fd(file->filepath, STDOUT_FILENO);
 	ft_putstr_fd(":\n", STDOUT_FILENO);
 	if (!((text_section = get_text_sect_offset(hdr_to_use))))

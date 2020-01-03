@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 16:08:31 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/03 18:20:23 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,18 +133,9 @@ int				ft_nm_process_file(t_ft_nm_file *file)
 	if (check_load_commands(file, hdr_to_use) || parse_file_segment_cmds(file, hdr_to_use, &cmd))
 		return (1);
 	dprintf(DEBUG_FD, "text_nsect: %d - data_nsect: %d - bss_nsect: %d\n", hdr_to_use->text_nsect, hdr_to_use->data_nsect, hdr_to_use->bss_nsect);
-	slseek(file, hdr_to_use->fat_offset + hdr_to_use->machhdr_size, SLSEEK_SET);
-	if ((idx = goto_load_command(file, hdr_to_use, (uint32_t [3]){LC_SYMTAB, 0}, &cmd)) != -1)
-	{
-		if (hdr_to_use->is_64)
-			symlist = build_symbol_list(\
-				file, hdr_to_use, \
-				(void *)file->seek_ptr - sizeof(struct load_command));
-		else
-			symlist = build_symbol_list_32(\
-				file, hdr_to_use, \
-				(void *)file->seek_ptr - sizeof(struct load_command));
-		dump_symlist(hdr_to_use, symlist);
-	}
+	if (!(symlist = build_symbol_list(hdr_to_use, true)))
+		return (1);
+	dump_symlist(hdr_to_use, symlist);
+	free_symbol_list(symlist);
 	return (0);
 }

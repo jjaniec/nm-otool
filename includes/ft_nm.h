@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 23:15:58 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/03 18:16:01 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,9 +171,7 @@ int					init_header_info(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo);
 
 int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t load_cmds[2], struct load_command *cmd);
 
-t_ft_nm_sym			*build_symbol_list(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo, struct symtab_command *symtabcmd);
-
-t_ft_nm_sym			*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct symtab_command *symtabcmd);
+t_ft_nm_sym			*build_symbol_list(t_ft_nm_hdrinfo *hdrinfo, bool handle_corrupt_syms);
 
 uint32_t			swap_32bit(uint32_t x);
 
@@ -187,6 +185,7 @@ int					read_file_content(char *file, char **content);
 
 t_ft_nm_hdrinfo		*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, cpu_type_t target_type);
 
+void				*free_symbol_list(t_ft_nm_sym *syms);
 
 /*
 ** Parsing

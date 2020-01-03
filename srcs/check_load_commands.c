@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 20:29:00 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/30 21:04:09 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/02 20:16:59 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 static int		check_segment_command_64(t_ft_nm_hdrinfo *hdrinfo, \
 					struct segment_command_64 *seg, uint32_t *parsed_filesize)
 {
-	if ((seg->fileoff - *parsed_filesize) % 4096)
+	if ((seg->fileoff - *parsed_filesize) % 4096 && \
+		!(seg->fileoff == (hdrinfo->machhdr_size + hdrinfo->sizeofcmds)))
 	{
 		ft_putstr_fd("Inconsistent file offsets / sizes in segment_command_64\n", 2);
 		return (1);
@@ -54,6 +55,24 @@ static int		check_segment_command(t_ft_nm_hdrinfo *hdrinfo, \
 	return (check_segment_command_32(hdrinfo, seg, parsed_filesize));
 }
 
+static int		check_symtab_command(t_ft_nm_hdrinfo *hdrinfo, \
+					struct symtab_command *symtab)
+{
+	uint32_t		symsize;
+
+	symsize = (symtab->nsyms * ( \
+		(hdrinfo->is_64) ? (sizeof(struct nlist_64)) : (sizeof(struct nlist)) \
+	));
+	if (!(symsize <= (symtab->stroff - symtab->symoff)))
+	{
+		ft_putstr_fd(hdrinfo->file->filepath, 2);
+		ft_putstr_fd(" truncated or malformed object (string table overlaps symbol table)\n", 2);
+		return (1);
+	}
+	return (0);
+}
+
+
 static int		check_load_commands_64(t_ft_nm_file *file, \
 					t_ft_nm_hdrinfo *hdrinfo)
 {
@@ -85,6 +104,11 @@ static int		check_load_commands_64(t_ft_nm_file *file, \
 		if ((cmd == LC_SEGMENT || cmd == LC_SEGMENT_64))
 		{
 			if (check_segment_command(hdrinfo, (void *)file->seek_ptr, &parsed_filesize))
+				return (2);
+		}
+		else if (cmd == LC_SYMTAB)
+		{
+			if (check_symtab_command(hdrinfo, (void *)file->seek_ptr))
 				return (2);
 		}
 	}
