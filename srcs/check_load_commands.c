@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 20:29:00 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/02 20:16:59 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 20:38:49 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,15 @@ static int		check_segment_command_64(t_ft_nm_hdrinfo *hdrinfo, \
 	if ((seg->fileoff - *parsed_filesize) % 4096 && \
 		!(seg->fileoff == (hdrinfo->machhdr_size + hdrinfo->sizeofcmds)))
 	{
-		ft_putstr_fd("Inconsistent file offsets / sizes in segment_command_64\n", 2);
+		ft_putstr_fd("Inconsistent file offsets / " \
+			"sizes in segment_command_64\n", 2);
 		return (1);
 	}
-	if (seg->cmdsize < (sizeof(struct segment_command_64) + seg->nsects * sizeof(struct section_64)))
+	if (seg->cmdsize < (sizeof(struct segment_command_64) + seg->nsects * \
+		sizeof(struct section_64)))
 	{
-		ft_putstr_fd("Inconsistent cmdsize in LC_SEGMENT_64 for the number of sections\n", 2);
+		ft_putstr_fd("Inconsistent cmdsize in LC_SEGMENT_64 " \
+			"for the number of sections\n", 2);
 		return (1);
 	}
 	*parsed_filesize = *parsed_filesize + seg->filesize;
@@ -35,12 +38,15 @@ static int		check_segment_command_32(t_ft_nm_hdrinfo *hdrinfo, \
 {
 	if (seg->fileoff != *parsed_filesize)
 	{
-		ft_putstr_fd("Inconsistent file offsets / sizes in segment_command_32\n", 2);
+		ft_putstr_fd("Inconsistent file offsets / " \
+			"sizes in segment_command_32\n", 2);
 		return (1);
 	}
-	if (seg->cmdsize < (sizeof(struct segment_command) + seg->nsects * sizeof(struct section)))
+	if (seg->cmdsize < (sizeof(struct segment_command) + seg->nsects \
+		* sizeof(struct section)))
 	{
-		ft_putstr_fd("Inconsistent cmdsize in LC_SEGMENT for the number of sections\n", 2);
+		ft_putstr_fd("Inconsistent cmdsize in LC_SEGMENT " \
+			"for the number of sections\n", 2);
 		return (1);
 	}
 	*parsed_filesize = *parsed_filesize + seg->filesize;
@@ -60,13 +66,13 @@ static int		check_symtab_command(t_ft_nm_hdrinfo *hdrinfo, \
 {
 	uint32_t		symsize;
 
-	symsize = (symtab->nsyms * ( \
-		(hdrinfo->is_64) ? (sizeof(struct nlist_64)) : (sizeof(struct nlist)) \
-	));
+	symsize = (symtab->nsyms * ((hdrinfo->is_64) ? \
+			(sizeof(struct nlist_64)) : (sizeof(struct nlist))));
 	if (!(symsize <= (symtab->stroff - symtab->symoff)))
 	{
 		ft_putstr_fd(hdrinfo->file->filepath, 2);
-		ft_putstr_fd(" truncated or malformed object (string table overlaps symbol table)\n", 2);
+		ft_putstr_fd(" truncated or malformed object " \
+			"(string table overlaps symbol table)\n", 2);
 		return (1);
 	}
 	return (0);
@@ -79,7 +85,7 @@ static int		check_load_commands_64(t_ft_nm_file *file, \
 	uint32_t			cmdsize;
 	uint32_t			parsed_ncmds;
 	uint32_t			parsed_sizeofcmds;
-	uint32_t			parsed_filesize = 0;
+	uint32_t			parsed_filesize;
 	uint32_t			cmd;
 
 	(void)file;
@@ -122,7 +128,8 @@ static int		check_load_commands_64(t_ft_nm_file *file, \
 			parsed_sizeofcmds <= hdrinfo->sizeofcmds));
 }
 
-int			check_load_commands(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo)
+int				check_load_commands(t_ft_nm_file *file, \
+					t_ft_nm_hdrinfo *hdrinfo)
 {
 	int		r;
 

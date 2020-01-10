@@ -6,19 +6,23 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/03 18:52:31 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 20:24:22 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static int			init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, struct fat_arch *arch, uint32_t fat_magic)
+static int			init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, \
+						struct fat_arch *arch, uint32_t fat_magic)
 {
 	if (arch)
 	{
-		hdrinfo->fat_offset = is_big_endian(fat_magic) ? (arch->offset) : swap_32bit(arch->offset);
-		hdrinfo->fat_align = 1 << (is_big_endian(fat_magic) ? (arch->align) : swap_32bit(arch->align));
-		hdrinfo->fat_size = is_big_endian(fat_magic) ? (arch->size) : swap_32bit(arch->size);
+		hdrinfo->fat_offset = is_big_endian(fat_magic) ? (arch->offset) : \
+			swap_32bit(arch->offset);
+		hdrinfo->fat_align = 1 << (is_big_endian(fat_magic) ? (arch->align) : \
+			swap_32bit(arch->align));
+		hdrinfo->fat_size = is_big_endian(fat_magic) ? (arch->size) : \
+			swap_32bit(arch->size);
 	}
 	else
 	{
@@ -34,7 +38,6 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 {
 	uint32_t			magic;
 
-	hdrinfo->file = file;
 	init_fat_arch_values(hdrinfo, arch, start_magic);
 	if (arch)
 	{
@@ -52,8 +55,6 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	sseek_read(file, &(hdrinfo->cpu_subtype), sizeof(cpu_subtype_t));
 	if (!hdrinfo->is_be)
 		hdrinfo->cpu_subtype = swap_32bit(hdrinfo->cpu_subtype);
-	// read_byte_range_at_pos(hdrinfo, &hdrinfo->cpu_subtype, sizeof(cpu_subtype_t), \
-	// 	hdrinfo->fat_offset + ((hdrinfo->is_64) ? (__offsetof(struct mach_header_64, cpusubtype)) : (__offsetof(struct mach_header, cpusubtype))));
 	hdrinfo->magic = magic;
 	hdrinfo->text_nsect = 0;
 	hdrinfo->data_nsect = 0;
@@ -70,7 +71,8 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	return (hdrinfo);
 }
 
-static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t nfat_arch, uint32_t magic)
+static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, \
+						uint32_t nfat_arch, uint32_t magic)
 {
 	struct fat_arch		arch;
 	uint32_t			fat_header_idx;
@@ -86,6 +88,7 @@ static int			handle_fat_header(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uin
 		if (cur_mach_header)
 		{
 			new_mach_header = malloc(sizeof(t_ft_nm_hdrinfo));
+			new_mach_header->file = file;
 			if (!init_macho_header(file, new_mach_header, &arch, magic))
 				return (1);
 			if (check_hdr_overlap(cur_mach_header, (uint32_t)file->seek_ptr))
@@ -118,7 +121,7 @@ int					init_header_info(t_ft_nm_file *file, \
 	uint32_t			magic;
 	uint32_t			nfat_arch;
 
-	(void)file;
+	hdrinfo->file = file;
 	sseek_read(file, &magic, sizeof(uint32_t));
 	if (is_magic_fat(magic))
 	{

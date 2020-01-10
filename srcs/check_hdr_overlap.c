@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 15:24:52 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 18:39:04 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 20:32:49 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ static int		align(int x, int align)
 
 int				check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, int offset)
 {
-	if (offset > align(hdrinfo->fat_align + hdrinfo->fat_size, hdrinfo->fat_align))
+	if (offset > align(hdrinfo->fat_align + hdrinfo->fat_size, \
+		hdrinfo->fat_align))
 		return (0);
 	return (1);
 }

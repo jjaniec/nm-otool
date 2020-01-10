@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dump_symlist.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joffreyjaniec <joffreyjaniec@student.42    +#+  +:+       +#+        */
+/*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 16:29:19 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/21 15:21:44 by joffreyjani      ###   ########.fr       */
+/*   Updated: 2020/01/10 20:34:40 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,14 @@ static void		print_address(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *s)
 	}
 }
 
-void		dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist)
+void			dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist, \
+					bool print_filename)
 {
 	t_ft_nm_sym		*s;
 
 	s = symlist;
+	if (print_filename)
+		ft_printf("\n%s:\n", hdrinfo->file->filepath);
 	while (s)
 	{
 		if (s->symtype != '-')

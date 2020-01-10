@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:11:24 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/02 20:27:19 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 20:32:04 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,9 @@ static int		indexof_uint(uint32_t x, uint32_t *tab, unsigned int tab_size)
 ** & fill cmd struct
 */
 
-int		goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t load_cmds[2], struct load_command *cmd)
+int				goto_load_command(t_ft_nm_file *file, \
+					t_ft_nm_hdrinfo *hdrinfo, uint32_t load_cmds[2], \
+					struct load_command *cmd)
 {
 	off_t				seek_ptr_save;
 	uint32_t			i;

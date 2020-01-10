@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/03 18:20:23 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 19:38:26 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 	return (0);
 }
 
-int				ft_nm_process_file(t_ft_nm_file *file)
+int				ft_nm_process_file(t_ft_nm_file *file, bool print_filename)
 {
 	t_ft_nm_hdrinfo		hdrs;
 	t_ft_nm_hdrinfo		*hdr_to_use;
@@ -135,7 +135,7 @@ int				ft_nm_process_file(t_ft_nm_file *file)
 	dprintf(DEBUG_FD, "text_nsect: %d - data_nsect: %d - bss_nsect: %d\n", hdr_to_use->text_nsect, hdr_to_use->data_nsect, hdr_to_use->bss_nsect);
 	if (!(symlist = build_symbol_list(hdr_to_use, true)))
 		return (1);
-	dump_symlist(hdr_to_use, symlist);
+	dump_symlist(hdr_to_use, symlist, print_filename);
 	free_symbol_list(symlist);
 	return (0);
 }

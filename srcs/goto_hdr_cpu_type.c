@@ -6,13 +6,14 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/21 15:13:52 by joffreyjani       #+#    #+#             */
-/*   Updated: 2020/01/03 18:31:50 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 20:32:19 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-t_ft_nm_hdrinfo			*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, cpu_type_t target_type)
+t_ft_nm_hdrinfo			*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, \
+							cpu_type_t target_type)
 {
 	t_ft_nm_hdrinfo		*h;
 

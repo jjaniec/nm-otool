@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:14:10 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 19:18:54 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 20:11:04 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,5 @@ int		slseek(t_ft_nm_file *file, int offset, int whence)
 			r = offset;
 		}
 	}
-	// dprintf(2, "Offset moved to: %ld\n", file->seek_ptr - file->content);
 	return (r);
 }

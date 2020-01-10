@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:13:49 by jjaniec           #+#    #+#             */
-/*   Updated: 2019/12/13 15:17:35 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/10 20:31:12 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,5 @@ int			sseek_read(t_ft_nm_file *file, void *buf, unsigned int size)
 		file->seek_ptr += 1;
 		i++;
 	}
-	// if (file->seek_ptr == file->content + )
 	return (i);
 }
