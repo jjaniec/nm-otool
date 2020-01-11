@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/10 19:38:26 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/11 19:39:27 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ static int		parse_cmd_sectn(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct
 	void				*section_ptr;
 	uint32_t			i;
 	uint32_t			parsed_size;
+
+int		test = 0;
 
 	i = 0;
 	parsed_size = 0;
@@ -40,7 +42,6 @@ static int		parse_cmd_sectn(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct
 		i++;
 		*sect_count += 1;
 		parsed_size += sizeof(struct section_64);
-		dprintf(DEBUG_FD, "LC Parsed size: %u / %u - ncmds: %u / %u\n", parsed_size, seg64->cmdsize, i, seg64->nsects);
 		section_ptr += sizeof(struct section_64);
 	}
 	if (parsed_size + sizeof(struct segment_command_64) > seg64->cmdsize || i != seg64->nsects)
@@ -89,8 +90,8 @@ static int		parse_cmd_sectn_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, str
 	return (0);
 }
 
-
-static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct load_command *cmd)
+static int		parse_file_segment_cmds(t_ft_nm_file *file, \
+					t_ft_nm_hdrinfo *hdrinfo, struct load_command *cmd)
 {
 	uint32_t			load_command_size;
 	uint32_t			load_command_offset;
@@ -99,18 +100,19 @@ static int		parse_file_segment_cmds(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo
 
 	sect_count = 0;
 	slseek(file, hdrinfo->fat_offset + hdrinfo->machhdr_size, SLSEEK_SET);
-	while ((idx = goto_load_command(file, hdrinfo, (uint32_t [3]){LC_SEGMENT, LC_SEGMENT_64}, cmd)) != -1)
+	while ((idx = goto_load_command(file, hdrinfo, \
+		(uint32_t[3]){LC_SEGMENT, LC_SEGMENT_64}, cmd)) != -1)
 	{
 		load_command_size = cmd->cmdsize;
-		load_command_offset = file->seek_ptr - file->content - sizeof(struct load_command);
-		slseek(file, - ((int)sizeof(struct load_command)), SLSEEK_CUR);
-		if (hdrinfo->is_64)
-		{
-			if (parse_cmd_sectn(file, hdrinfo, (struct segment_command_64 *)file->seek_ptr, &sect_count))
-				return (1);
-		}
-		else
-			parse_cmd_sectn_32(file, hdrinfo, (struct segment_command *)file->seek_ptr, &sect_count);
+		load_command_offset = file->seek_ptr - file->content - \
+			sizeof(struct load_command);
+		slseek(file, -((int)sizeof(struct load_command)), SLSEEK_CUR);
+		if (hdrinfo->is_64 && parse_cmd_sectn(file, hdrinfo, \
+			(struct segment_command_64 *)file->seek_ptr, &sect_count))
+			return (1);
+		else if (!hdrinfo->is_64)
+			parse_cmd_sectn_32(file, hdrinfo, \
+				(struct segment_command *)file->seek_ptr, &sect_count);
 		slseek(file, load_command_offset + load_command_size, SLSEEK_SET);
 	}
 	return (0);
@@ -130,9 +132,9 @@ int				ft_nm_process_file(t_ft_nm_file *file, bool print_filename)
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_X86)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_I386)))
 		return (1);
-	if (check_load_commands(file, hdr_to_use) || parse_file_segment_cmds(file, hdr_to_use, &cmd))
+	if (check_load_commands(file, hdr_to_use) || \
+		parse_file_segment_cmds(file, hdr_to_use, &cmd))
 		return (1);
-	dprintf(DEBUG_FD, "text_nsect: %d - data_nsect: %d - bss_nsect: %d\n", hdr_to_use->text_nsect, hdr_to_use->data_nsect, hdr_to_use->bss_nsect);
 	if (!(symlist = build_symbol_list(hdr_to_use, true)))
 		return (1);
 	dump_symlist(hdr_to_use, symlist, print_filename);

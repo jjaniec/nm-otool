@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/11 19:00:35 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/11 19:05:19 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # include <inttypes.h>
 
 # define HOST_CPU_TYPE		CPU_TYPE_X86_64
-
 
 # define SLSEEK_CUR			1
 # define SLSEEK_SET			2
@@ -149,70 +148,82 @@ typedef struct				s_ft_nm_hdrinfo {
 	bool					is_be;
 }							t_ft_nm_hdrinfo;
 
-typedef struct	s_ft_nm_sym {
-	struct s_ft_nm_sym	*next;
-	uint64_t			symvalue;
-	char				*symname;
-	char				*indr_name;
-	uint8_t				n_type;
-	char				symtype;
-}				t_ft_nm_sym;
+typedef struct				s_ft_nm_sym {
+	struct s_ft_nm_sym		*next;
+	uint64_t				symvalue;
+	char					*symname;
+	char					*indr_name;
+	uint8_t					n_type;
+	char					symtype;
+}							t_ft_nm_sym;
 
+int							ft_nm_process_file(t_ft_nm_file *file, \
+								bool print_filename);
 
-int					ft_nm_process_file(t_ft_nm_file *file, bool print_filename);
+bool						is_magic_64(uint32_t magic);
 
-bool				is_magic_64(uint32_t magic);
+bool						is_magic_fat(uint32_t magic);
 
-bool				is_magic_fat(uint32_t magic);
+bool						is_magic_mach(uint32_t magic);
 
-bool				is_magic_mach(uint32_t magic);
+bool						is_big_endian(uint32_t magic);
 
-bool				is_big_endian(uint32_t magic);
+int							init_header_info(t_ft_nm_file *file, \
+								t_ft_nm_hdrinfo *fileinfo);
 
-int					init_header_info(t_ft_nm_file *file, t_ft_nm_hdrinfo *fileinfo);
+int							goto_load_command(t_ft_nm_file *file, \
+								t_ft_nm_hdrinfo *hdrinfo, \
+								uint32_t load_cmds[2], \
+								struct load_command *cmd);
 
-int					goto_load_command(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, uint32_t load_cmds[2], struct load_command *cmd);
+t_ft_nm_sym					*build_symbol_list(t_ft_nm_hdrinfo *hdrinfo, \
+								bool handle_corrupt_syms);
 
-t_ft_nm_sym			*build_symbol_list(t_ft_nm_hdrinfo *hdrinfo, bool handle_corrupt_syms);
+uint32_t					swap_32bit(uint32_t x);
 
-uint32_t			swap_32bit(uint32_t x);
+int							check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, \
+								int offset);
 
-int					check_hdr_overlap(t_ft_nm_hdrinfo *hdrinfo, int offset);
+int							check_load_commands(t_ft_nm_file *file, \
+								t_ft_nm_hdrinfo *hdrinfo);
 
-int					check_load_commands(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo);
+void						dump_symlist(t_ft_nm_hdrinfo *hdrinfo, \
+								t_ft_nm_sym *symlist, bool print_filename);
 
-void				dump_symlist(t_ft_nm_hdrinfo *hdrinfo, t_ft_nm_sym *symlist, bool print_filename);
+int							read_file_content(char *file, \
+								char **content);
 
-int					read_file_content(char *file, char **content);
+t_ft_nm_hdrinfo				*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, \
+								cpu_type_t target_type);
 
-t_ft_nm_hdrinfo		*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, cpu_type_t target_type);
-
-void				*free_symbol_list(t_ft_nm_sym *syms);
+void						*free_symbol_list(t_ft_nm_sym *syms);
 
 /*
 ** Parsing
 */
 
-int					read_byte_range_at_pos(t_ft_nm_hdrinfo *hdrinfo, void *buffer, \
-						unsigned int size, int offset);
+int							read_byte_range_at_pos(t_ft_nm_hdrinfo *hdrinfo, \
+								void *buffer, unsigned int size, \
+								int offset);
 
-int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
+int							sseek_read(t_ft_nm_file *file, void *buf, \
+								unsigned int size);
 
-int					slseek(t_ft_nm_file *file, int offset, int whence);
+int							slseek(t_ft_nm_file *file, int offset, int whence);
 
-void				swap_byte_range(void *bytes, size_t range);
+void						swap_byte_range(void *bytes, size_t range);
 
 /*
 ** otool
 */
 
-typedef struct	s_ft_otool_sect {
-	uint32_t			size;
-	uint64_t			address;
-	uint32_t			offset;
-	t_ft_nm_hdrinfo		*hdr;
-}				t_ft_otool_sect;
+typedef struct				s_ft_otool_sect {
+	uint32_t				size;
+	uint64_t				address;
+	uint32_t				offset;
+	t_ft_nm_hdrinfo			*hdr;
+}							t_ft_otool_sect;
 
-int						ft_otool_process_file(t_ft_nm_file *file);
+int							ft_otool_process_file(t_ft_nm_file *file);
 
 #endif
