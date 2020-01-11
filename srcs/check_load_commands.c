@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 20:29:00 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/10 20:38:49 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/11 16:11:42 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,50 +78,57 @@ static int		check_symtab_command(t_ft_nm_hdrinfo *hdrinfo, \
 	return (0);
 }
 
-
-static int		check_load_commands_64(t_ft_nm_file *file, \
-					t_ft_nm_hdrinfo *hdrinfo)
+static int		check_load_command_validity(t_ft_nm_hdrinfo *hdrinfo, \
+					uint32_t *parsed_sizeofcmds, uint32_t *parsed_filesize)
 {
+	uint32_t			cmd;
 	uint32_t			cmdsize;
+
+	read_byte_range_at_pos(hdrinfo, &cmd, sizeof(uint32_t), \
+		hdrinfo->fat_offset + hdrinfo->machhdr_size + \
+		*parsed_sizeofcmds + \
+		__offsetof(struct load_command, cmd));
+	read_byte_range_at_pos(hdrinfo, &cmdsize, sizeof(uint32_t), \
+		hdrinfo->fat_offset + hdrinfo->machhdr_size + \
+		*parsed_sizeofcmds + \
+		__offsetof(struct load_command, cmdsize));
+	slseek(hdrinfo->file, hdrinfo->fat_offset + hdrinfo->machhdr_size + \
+		*parsed_sizeofcmds, SLSEEK_SET);
+	*parsed_sizeofcmds = *parsed_sizeofcmds + cmdsize;
+	if ((cmd == LC_SEGMENT || cmd == LC_SEGMENT_64))
+	{
+		if (check_segment_command(hdrinfo, (void *)hdrinfo->file->seek_ptr, \
+			parsed_filesize))
+			return (1);
+	}
+	else if (cmd == LC_SYMTAB && \
+		check_symtab_command(hdrinfo, (void *)hdrinfo->file->seek_ptr))
+		return (1);
+	return (0);
+}
+
+static int		check_load_commands_64(t_ft_nm_hdrinfo *hdrinfo)
+{
 	uint32_t			parsed_ncmds;
 	uint32_t			parsed_sizeofcmds;
 	uint32_t			parsed_filesize;
-	uint32_t			cmd;
 
-	(void)file;
 	parsed_ncmds = 0;
 	parsed_sizeofcmds = 0;
 	parsed_filesize = 0;
 	while (parsed_ncmds < hdrinfo->ncmds && \
 			parsed_sizeofcmds < hdrinfo->sizeofcmds)
 	{
-		read_byte_range_at_pos(hdrinfo, &cmd, sizeof(uint32_t), \
-			hdrinfo->fat_offset + hdrinfo->machhdr_size + \
-			parsed_sizeofcmds + \
-			__offsetof(struct load_command, cmd));
-		read_byte_range_at_pos(hdrinfo, &cmdsize, sizeof(uint32_t), \
-			hdrinfo->fat_offset + hdrinfo->machhdr_size + \
-			parsed_sizeofcmds + \
-			__offsetof(struct load_command, cmdsize));
-		slseek(file, hdrinfo->fat_offset + hdrinfo->machhdr_size + \
-			parsed_sizeofcmds, SLSEEK_SET);
-		parsed_sizeofcmds += cmdsize;
+		if (check_load_command_validity(hdrinfo, &parsed_sizeofcmds, \
+			&parsed_filesize))
+			return (2);
 		parsed_ncmds++;
-		if ((cmd == LC_SEGMENT || cmd == LC_SEGMENT_64))
-		{
-			if (check_segment_command(hdrinfo, (void *)file->seek_ptr, &parsed_filesize))
-				return (2);
-		}
-		else if (cmd == LC_SYMTAB)
-		{
-			if (check_symtab_command(hdrinfo, (void *)file->seek_ptr))
-				return (2);
-		}
 	}
 	dprintf(DEBUG_FD, "Parsed ncmds: %u / %u - parsed_size: %u / %u - parsed_filesize: %u / %u / %u\n", parsed_ncmds, hdrinfo->ncmds, parsed_sizeofcmds, hdrinfo->sizeofcmds, parsed_filesize, hdrinfo->file->totsiz, hdrinfo->fat_size);
 	if (!(parsed_filesize <= hdrinfo->fat_size))
 	{
-		ft_putstr_fd("Inconsistent file offsets / sizes in segment commands\n", 2);
+		ft_putstr_fd("Inconsistent file offsets / " \
+			"sizes in segment commands\n", 2);
 		return (2);
 	}
 	return (!(parsed_ncmds == hdrinfo->ncmds && \
@@ -134,7 +141,7 @@ int				check_load_commands(t_ft_nm_file *file, \
 	int		r;
 
 	slseek(file, hdrinfo->fat_offset + hdrinfo->machhdr_size, SLSEEK_SET);
-	if ((r = check_load_commands_64(file, hdrinfo)) == 1)
+	if ((r = check_load_commands_64(hdrinfo)) == 1)
 		dprintf(ERR_FD, "Invalid load commands size / number\n");
 	return (r);
 }

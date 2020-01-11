@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/03 18:17:05 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/11 16:20:47 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,24 +82,25 @@ static t_ft_nm_sym	*append_sym_to_list(t_ft_nm_sym **list, uint64_t symvalue, ch
 	return (new);
 }
 
-static char		*safe_read_symname(t_ft_nm_file *file, char *strtab_offset, \
+static char		*safe_read_symname(t_ft_nm_hdrinfo *hdrinfo, char *strtab_offset, \
 				unsigned int index, uint32_t strsize, bool handle_corrupt_syms)
 {
 	size_t		original_offset;
 
-	original_offset = file->seek_ptr - file->content;
+	original_offset = hdrinfo->file->seek_ptr - hdrinfo->file->content;
 	if (index > strsize && !handle_corrupt_syms)
 	{
-		ft_putstr_fd(file->filepath, 2);
+		ft_putstr_fd(hdrinfo->file->filepath, 2);
 		ft_putstr_fd(": truncated or malformed object (bad string table index past the end of string table for symbol)", 2);
 		return (NULL);
 	}
-	if (slseek(file, (int)(&strtab_offset[index] - file->content), SLSEEK_SET) == -1)
+	if (slseek(hdrinfo->file, (int)(&strtab_offset[index] - hdrinfo->file->content), SLSEEK_SET) == -1)
 		return (NULL);
 	return ((&strtab_offset[index]));
 }
 
-static char		*get_indr_name(t_ft_nm_file *file, uint64_t n_value, char *strtab_offset, struct symtab_command *symtabcmd)
+static char		*get_indr_name(t_ft_nm_file *file, uint64_t n_value, \
+					char *strtab_offset, struct symtab_command *symtabcmd)
 {
 	if (n_value == 0)
 		return ("");
@@ -114,7 +115,10 @@ static char		*get_indr_name(t_ft_nm_file *file, uint64_t n_value, char *strtab_o
 ** Build symbol list and return beginning of the list
 */
 
-static t_ft_nm_sym		*build_symbol_list_64(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct symtab_command *symtabcmd, bool handle_corrupt_syms)
+static t_ft_nm_sym		*build_symbol_list_64(t_ft_nm_file *file, \
+							t_ft_nm_hdrinfo *hdrinfo, \
+							struct symtab_command *symtabcmd, \
+							bool handle_corrupt_syms)
 {
 	uint32_t			i;
 	struct nlist_64		*symtab;
@@ -122,10 +126,11 @@ static t_ft_nm_sym		*build_symbol_list_64(t_ft_nm_file *file, t_ft_nm_hdrinfo *h
 	char				*strtab;
 	char				*symname;
 	char				*indr_name;
-	t_ft_nm_sym			*list = NULL;
+	t_ft_nm_sym			*list;
 	char				type;
 
 	i = 0;
+	list = NULL;
 	dprintf(2, "Build symbol list 64, size of struct %zu\n", sizeof(struct nlist_64));
 	strtab = hdrinfo->fat_offset + symtabcmd->stroff + (char *)file->content;
 	slseek(file, hdrinfo->fat_offset + symtabcmd->symoff, SLSEEK_SET);
@@ -146,14 +151,15 @@ static t_ft_nm_sym		*build_symbol_list_64(t_ft_nm_file *file, t_ft_nm_hdrinfo *h
 		indr_name = (!(nl.n_type & N_STAB) && (nl.n_type & N_TYPE) == N_INDR) ? (get_indr_name(file, nl.n_value, strtab, symtabcmd)) : (NULL);
 		if ((nl.n_type & N_EXT) && type != '?')
 			type = toupper(type);
-		if (!(symname = safe_read_symname(file, strtab, nl.n_un.n_strx, symtabcmd->strsize, handle_corrupt_syms)) && !handle_corrupt_syms)
+		if (!(symname = safe_read_symname(hdrinfo, strtab, nl.n_un.n_strx, symtabcmd->strsize, handle_corrupt_syms)) && !handle_corrupt_syms)
 			return (free_symbol_list(list));
 		append_sym_to_list(&list, nl.n_value, (char *[2]){symname, indr_name}, type, nl.n_type);
 	}
 	return (list);
 }
 
-static t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct symtab_command *symtabcmd, bool handle_corrupt_syms)
+static t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, \
+							struct symtab_command *symtabcmd, bool handle_corrupt_syms)
 {
 	uint32_t			i;
 	struct nlist		*symtab;
@@ -185,25 +191,30 @@ static t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *h
 		indr_name = (!(nl.n_type & N_STAB) && (nl.n_type & N_TYPE) == N_INDR) ? (get_indr_name(file, nl.n_value, strtab, symtabcmd)) : (NULL);
 		if ((nl.n_type & N_EXT) && type != '?')
 		    type = toupper(type);
-		if (!(symname = safe_read_symname(file, strtab, nl.n_un.n_strx, symtabcmd->strsize, handle_corrupt_syms)) && !handle_corrupt_syms)
+		if (!(symname = safe_read_symname(hdrinfo, strtab, nl.n_un.n_strx, symtabcmd->strsize, handle_corrupt_syms)) && !handle_corrupt_syms)
 			return (free_symbol_list(list));
 		append_sym_to_list(&list, nl.n_value, (char *[2]){symname, indr_name}, type, nl.n_type);
 	}
 	return (list);
 }
 
-t_ft_nm_sym				*build_symbol_list(t_ft_nm_hdrinfo *hdrinfo, bool handle_corrupt_syms)
+t_ft_nm_sym				*build_symbol_list(t_ft_nm_hdrinfo *hdrinfo, \
+							bool handle_corrupt_syms)
 {
-	slseek(hdrinfo->file, hdrinfo->fat_offset + hdrinfo->machhdr_size, SLSEEK_SET);
-	if (goto_load_command(hdrinfo->file, hdrinfo, (uint32_t [3]){LC_SYMTAB, 0}, NULL) != -1)
+	slseek(hdrinfo->file, hdrinfo->fat_offset + hdrinfo->machhdr_size, \
+		SLSEEK_SET);
+	if (goto_load_command(hdrinfo->file, hdrinfo, \
+		(uint32_t[3]){LC_SYMTAB, 0}, NULL) != -1)
 	{
 		if (hdrinfo->is_64)
 			return (build_symbol_list_64(\
 				hdrinfo->file, hdrinfo, \
-				(void *)hdrinfo->file->seek_ptr - sizeof(struct load_command), handle_corrupt_syms));
-		return (build_symbol_list_32(\
-			hdrinfo->file, hdrinfo, \
-			(void *)hdrinfo->file->seek_ptr - sizeof(struct load_command), handle_corrupt_syms));
+				(void *)hdrinfo->file->seek_ptr - sizeof(struct load_command), \
+				handle_corrupt_syms));
+			return (build_symbol_list_32(\
+				hdrinfo->file, hdrinfo, \
+				(void *)hdrinfo->file->seek_ptr - sizeof(struct load_command), \
+				handle_corrupt_syms));
 	}
 	return (NULL);
 }

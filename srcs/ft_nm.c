@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:19 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/10 20:34:05 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/11 15:58:01 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int					main(int ac, char **av)
 		return (read_and_process_file("a.out", false));
 	i = 0;
 	r = 0;
-	while (++i != ac)
-		r += read_and_process_file(av[i], ac != 1);
+	while ((int)++i != ac)
+		r += read_and_process_file(av[i], ac != 2);
 	return (r != 0);
 }
