@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/11 17:53:09 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/11 18:56:35 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ static int			init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, \
 			swap_32bit(arch->align));
 		hdrinfo->fat_size = is_big_endian(fat_magic) ? (arch->size) : \
 			swap_32bit(arch->size);
+		if (hdrinfo->fat_offset % hdrinfo->fat_align)
+		{
+			dprintf(ERR_FD, "Header not aligned on it's alignment");
+			return (1);
+		}
 	}
 	else
 	{
@@ -68,7 +73,9 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 {
 	uint32_t			magic;
 
-	init_fat_arch_values(hdrinfo, arch, start_magic);
+	hdrinfo->file = file;
+	if (init_fat_arch_values(hdrinfo, arch, start_magic))
+		return (NULL);
 	if (arch)
 	{
 		slseek(file, hdrinfo->fat_offset, SLSEEK_SET);
@@ -88,47 +95,64 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	// return (hdrinfo);
 }
 
+static int			fill_next_fat_header_infos(t_ft_nm_file *file, \
+						uint32_t *fat_header_idx, uint32_t magic, \
+						t_ft_nm_hdrinfo **headers)
+{
+	struct fat_arch		arch;
+	t_ft_nm_hdrinfo		*cur_mach_header;
+	t_ft_nm_hdrinfo		*new_mach_header;
+
+	cur_mach_header = headers[0];
+	new_mach_header = headers[1];
+	slseek(file, sizeof(struct fat_header) + (sizeof(struct fat_arch) * \
+		*fat_header_idx), SLSEEK_SET);
+	sseek_read(file, &arch, sizeof(struct fat_arch));
+	if (!init_macho_header(file, new_mach_header, &arch, magic))
+		return (1);
+	if (*fat_header_idx && \
+		check_hdr_overlap(cur_mach_header, (uint32_t)file->seek_ptr))
+	{
+		dprintf(2, "Overlap of previous header\n");
+		return (2);
+	}
+	if (new_mach_header->fat_offset % new_mach_header->fat_align)
+	{
+		dprintf(ERR_FD, "Header not aligned on it's alignment");
+		return (1);
+	}
+	*fat_header_idx += 1;
+	return (0);
+}
+
 static int			handle_fat_header(t_ft_nm_file *file, \
 						t_ft_nm_hdrinfo *hdrinfo, uint32_t nfat_arch, \
 						uint32_t magic)
 {
-	struct fat_arch		arch;
 	uint32_t			fat_header_idx;
 	t_ft_nm_hdrinfo		*cur_mach_header;
 	t_ft_nm_hdrinfo		*new_mach_header;
 
 	fat_header_idx = 0;
-	cur_mach_header = NULL;
 	while (fat_header_idx < nfat_arch)
 	{
-		slseek(file, sizeof(struct fat_header) + (sizeof(struct fat_arch) * fat_header_idx), SLSEEK_SET);
-		sseek_read(file, &arch, sizeof(struct fat_arch));
-		if (cur_mach_header)
+		if (fat_header_idx)
 		{
 			new_mach_header = malloc(sizeof(t_ft_nm_hdrinfo));
-			new_mach_header->file = file;
-			if (!init_macho_header(file, new_mach_header, &arch, magic))
+			if (fill_next_fat_header_infos(file, &fat_header_idx, magic, \
+				(void *[2]){cur_mach_header, new_mach_header}))
 				return (1);
-			if (check_hdr_overlap(cur_mach_header, (uint32_t)file->seek_ptr))
-			{
-				dprintf(2, "Overlap of previous header\n");
-				return (2);
-			}
 			cur_mach_header->next = new_mach_header;
 			cur_mach_header = new_mach_header;
 		}
 		else
 		{
-			if (!(cur_mach_header = init_macho_header(file, hdrinfo, &arch, magic)))
+			if (fill_next_fat_header_infos(file, &fat_header_idx, magic, \
+				(void *[2]){NULL, hdrinfo}))
 				return (1);
+			cur_mach_header = hdrinfo;
 		}
-		if (cur_mach_header->fat_offset % cur_mach_header->fat_align)
-		{
-			dprintf(ERR_FD, "Header not aligned on it's alignment");
-			return (2);
-		}
-		fat_header_idx++;
-		dprintf(2, "fat_header_idx: %d / %" PRIu32 " - cur_mach_header: %p, offset: %x\n", fat_header_idx, nfat_arch, cur_mach_header, cur_mach_header->fat_offset);
+		// dprintf(2, "fat_header_idx: %d / %" PRIu32 " - cur_mach_header: %p, offset: %x\n", fat_header_idx, nfat_arch, cur_mach_header, cur_mach_header->fat_offset);
 	}
 	return (0);
 }
@@ -139,7 +163,6 @@ int					init_header_info(t_ft_nm_file *file, \
 	uint32_t			magic;
 	uint32_t			nfat_arch;
 
-	hdrinfo->file = file;
 	sseek_read(file, &magic, sizeof(uint32_t));
 	if (is_magic_fat(magic))
 	{

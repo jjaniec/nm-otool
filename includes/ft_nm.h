@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/10 19:39:42 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/11 19:00:35 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,94 +31,96 @@
 # define NM_ERR_PREFIX		"ft_nm: "
 # define DEBUG_FD			2
 
-// struct mach_header {
-// 	uint32_t		magic;
-// 	cpu_type_t		cputype;
-// 	cpu_subtype_t	cpusubtype;
-// 	uint32_t		filetype;
-// 	uint32_t		ncmds;
-// 	uint32_t		sizeofcmds;
-// 	uint32_t		flags;
-// };
-
-// struct segment_command {
-// 	uint32_t		cmd;
-// 	uint32_t		cmdsize;
-// 	char			segname[16];
-// 	uint32_t		vmaddr;
-// 	uint32_t		vmsize;
-// 	uint32_t		fileoff;
-// 	uint32_t		filesize;
-// 	vm_prot_t		maxprot;
-// 	vm_prot_t		initprot;
-// 	uint32_t		nsects;
-// 	uint32_t		flags;
-// };
-
-// struct load_command {
-//   uint32_t cmd;
-//   uint32_t cmdsize;
-// };
-
-// struct segment_command {
-// 	uint32_t 	cmd
-// 	uint32_t 	cmdsize
-// 	uint32_t 	fileoff
-// 	uint32_t 	filesize
-// 	uint32_t 	flags
-// 	vm_prot_t 	initprot
-// 	vm_prot_t 	maxprot
-// 	uint32_t 	nsects
-// 	char 	segname [16]
-// 	uint32_t 	vmaddr
-// 	uint32_t 	vmsize
-// }
-
-// struct section
-// {
-// 	char sectname[16];
-// 	char segname[16];
-// 	uint32_t addr;
-// 	uint32_t size;
-// 	uint32_t offset;
-// 	uint32_t align;
-// 	uint32_t reloff;
-// 	uint32_t nreloc;
-// 	uint32_t flags;
-// 	uint32_t reserved1;
-// 	uint32_t reserved2;
-// };
-
-// struct symtab_command
-// {
-// 	uint32_t cmd;
-// 	uint32_t cmdsize;
-// 	uint32_t symoff;
-// 	uint32_t nsyms;
-// 	uint32_t stroff;
-// 	uint32_t strsize;
-// };
-
-//	struct nlist_64 {
-//		uint32_t n_strx;
-//		uint8_t n_type;
-//		uint8_t n_sect;
-//		uint16_t n_desc;
-//		uint64_t n_value;
-//	};
-
-// struct fat_arch {
-//     cpu_type_t  cputype;    /* cpu specifier (int) */
-//     cpu_subtype_t   cpusubtype; /* machine specifier (int) */
-//     uint32_t    offset;     /* file offset to this object file */
-//     uint32_t    size;       /* size of this object file */
-//     uint32_t    align;      /* alignment as a power of 2 */
-// };
-
-// struct fat_header {
-//     uint32_t    magic;      /* FAT_MAGIC or FAT_MAGIC_64 */
-//     uint32_t    nfat_arch;  /* number of structs that follow */
-// };
+/*
+**	struct mach_header {
+**		uint32_t		magic;
+**		cpu_type_t		cputype;
+**		cpu_subtype_t	cpusubtype;
+**		uint32_t		filetype;
+**		uint32_t		ncmds;
+**		uint32_t		sizeofcmds;
+**		uint32_t		flags;
+**	};
+**
+**	struct segment_command {
+**		uint32_t		cmd;
+**		uint32_t		cmdsize;
+**		char			segname[16];
+**		uint32_t		vmaddr;
+**		uint32_t		vmsize;
+**		uint32_t		fileoff;
+**		uint32_t		filesize;
+**		vm_prot_t		maxprot;
+**		vm_prot_t		initprot;
+**		uint32_t		nsects;
+**		uint32_t		flags;
+**	};
+**
+**	struct load_command {
+**	  uint32_t cmd;
+**	  uint32_t cmdsize;
+**	};
+**
+**	struct segment_command {
+**		uint32_t 	cmd
+**		uint32_t 	cmdsize
+**		uint32_t 	fileoff
+**		uint32_t 	filesize
+**		uint32_t 	flags
+**		vm_prot_t 	initprot
+**		vm_prot_t 	maxprot
+**		uint32_t 	nsects
+**		char 	segname [16]
+**		uint32_t 	vmaddr
+**		uint32_t 	vmsize
+**	}
+**
+**	struct section
+**	{
+**		char sectname[16];
+**		char segname[16];
+**		uint32_t addr;
+**		uint32_t size;
+**		uint32_t offset;
+**		uint32_t align;
+**		uint32_t reloff;
+**		uint32_t nreloc;
+**		uint32_t flags;
+**		uint32_t reserved1;
+**		uint32_t reserved2;
+**	};
+**
+**	struct symtab_command
+**	{
+**		uint32_t cmd;
+**		uint32_t cmdsize;
+**		uint32_t symoff;
+**		uint32_t nsyms;
+**		uint32_t stroff;
+**		uint32_t strsize;
+**	};
+**
+**	struct nlist_64 {
+**		uint32_t n_strx;
+**		uint8_t n_type;
+**		uint8_t n_sect;
+**		uint16_t n_desc;
+**		uint64_t n_value;
+**	};
+**
+**	struct fat_arch {
+**	    cpu_type_t  cputype;    cpu specifier (int)
+**	    cpu_subtype_t   cpusubtype; machine specifier (int)
+**	    uint32_t    offset;     file offset to this object file
+**	    uint32_t    size;       size of this object file
+**	    uint32_t    align;      alignment as a power of 2
+**	};
+**
+**	struct fat_header {
+**	    uint32_t    magic;      FAT_MAGIC or FAT_MAGIC_64
+**	    uint32_t    nfat_arch;  number of structs that follow
+**	};
+*/
 
 typedef struct				s_ft_nm_file
 {
@@ -144,7 +146,7 @@ typedef struct				s_ft_nm_hdrinfo {
 	uint8_t					data_nsect;
 	uint8_t					bss_nsect;
 	bool					is_64;
-	bool					is_be; // is big endian
+	bool					is_be;
 }							t_ft_nm_hdrinfo;
 
 typedef struct	s_ft_nm_sym {
@@ -199,10 +201,6 @@ int					sseek_read(t_ft_nm_file *file, void *buf, unsigned int size);
 int					slseek(t_ft_nm_file *file, int offset, int whence);
 
 void				swap_byte_range(void *bytes, size_t range);
-
-
-
-
 
 /*
 ** otool
