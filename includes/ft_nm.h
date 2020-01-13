@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/11 19:05:19 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 21:28:32 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,6 +197,10 @@ t_ft_nm_hdrinfo				*goto_hdr_cpu_type(t_ft_nm_hdrinfo *hdr_list, \
 								cpu_type_t target_type);
 
 void						*free_symbol_list(t_ft_nm_sym *syms);
+
+t_ft_nm_sym					*add_new_sym_to_list(t_ft_nm_sym **list, \
+								uint64_t symvalue, char **symname, \
+								char *types);
 
 /*
 ** Parsing

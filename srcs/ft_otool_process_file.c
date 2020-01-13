@@ -6,13 +6,15 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:20:25 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/03 18:54:02 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 21:43:48 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static t_ft_otool_sect	*get_sect_data(t_ft_nm_hdrinfo *hdrinfo, struct section_64 *section, char *sectname, char *segname)
+static t_ft_otool_sect	*get_sect_data(t_ft_nm_hdrinfo *hdrinfo, \
+							struct section_64 *section, \
+							char *sectname, char *segname)
 {
 	t_ft_otool_sect	*r;
 
@@ -22,15 +24,20 @@ static t_ft_otool_sect	*get_sect_data(t_ft_nm_hdrinfo *hdrinfo, struct section_6
 			(((struct section *)section)->segname), segname) == 0 && \
 		(r = ft_memalloc(sizeof(t_ft_otool_sect))))
 	{
-		r->offset = (hdrinfo->is_64) ? (section->offset) : (((struct section *)section)->offset);
-		r->size = (hdrinfo->is_64) ? (section->size) : (((struct section *)section)->size);
-		r->address = (hdrinfo->is_64) ? (section->addr) : (((struct section *)section)->addr);
+		r->offset = (hdrinfo->is_64) ? (section->offset) : \
+			(((struct section *)section)->offset);
+		r->size = (hdrinfo->is_64) ? (section->size) : \
+			(((struct section *)section)->size);
+		r->address = (hdrinfo->is_64) ? (section->addr) : \
+			(((struct section *)section)->addr);
 		return (r);
 	}
 	return (NULL);
 }
 
-static t_ft_otool_sect	*search_sect(t_ft_nm_hdrinfo *hdrinfo, struct segment_command_64 *seg, char *sectname, char *segname)
+static t_ft_otool_sect	*search_sect(t_ft_nm_hdrinfo *hdrinfo, \
+							struct segment_command_64 *seg, \
+							char *sectname, char *segname)
 {
 	struct section_64	section;
 	void				*section_ptr;
@@ -49,11 +56,15 @@ static t_ft_otool_sect	*search_sect(t_ft_nm_hdrinfo *hdrinfo, struct segment_com
 		if ((r = get_sect_data(hdrinfo, &section, sectname, segname)))
 			return (r);
 		i++;
-		parsed_size += (hdrinfo->is_64) ? (sizeof(struct section_64)) : (sizeof(struct section));
-		section_ptr += (hdrinfo->is_64) ? (sizeof(struct section_64)) : (sizeof(struct section));
+		parsed_size += (hdrinfo->is_64) ? \
+			(sizeof(struct section_64)) : (sizeof(struct section));
+		section_ptr += (hdrinfo->is_64) ? \
+			(sizeof(struct section_64)) : (sizeof(struct section));
 	}
-	if (parsed_size + sizeof(struct segment_command_64) > seg->cmdsize || i != seg->nsects)
-		ft_putstr_fd(OTOOL_ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n", ERR_FD);
+	if (parsed_size + sizeof(struct segment_command_64) > seg->cmdsize || \
+		i != seg->nsects)
+		ft_putstr_fd(OTOOL_ERR_PREFIX "Inconsistent load command size" \
+			" / number of sections in LC_SEGMENT\n", ERR_FD);
 	return (NULL);
 }
 
@@ -65,24 +76,29 @@ static t_ft_otool_sect	*get_text_sect_offset(t_ft_nm_hdrinfo *hdrinfo)
 	int					idx;
 	t_ft_otool_sect		*text_sect;
 
-	text_sect = NULL;
-	slseek(hdrinfo->file, hdrinfo->fat_offset + hdrinfo->machhdr_size, SLSEEK_SET);
-	while ((idx = goto_load_command(hdrinfo->file, hdrinfo, (uint32_t [3]){LC_SEGMENT, LC_SEGMENT_64}, &cmd)) != -1)
+	slseek(hdrinfo->file, hdrinfo->fat_offset + \
+		hdrinfo->machhdr_size, SLSEEK_SET);
+	while ((idx = goto_load_command(hdrinfo->file, hdrinfo, \
+		(uint32_t[3]){LC_SEGMENT, LC_SEGMENT_64}, &cmd)) != -1)
 	{
 		load_command_size = cmd.cmdsize;
-		load_command_offset = hdrinfo->file->seek_ptr - hdrinfo->file->content - sizeof(struct load_command);
-		slseek(hdrinfo->file, - ((int)sizeof(struct load_command)), SLSEEK_CUR);
-		if ((text_sect = search_sect(hdrinfo, (void *)hdrinfo->file->seek_ptr, SECT_TEXT, SEG_TEXT)))
+		load_command_offset = hdrinfo->file->seek_ptr - \
+			hdrinfo->file->content - sizeof(struct load_command);
+		slseek(hdrinfo->file, -((int)sizeof(struct load_command)), SLSEEK_CUR);
+		if ((text_sect = search_sect(hdrinfo, \
+			(void *)hdrinfo->file->seek_ptr, SECT_TEXT, SEG_TEXT)))
 		{
 			text_sect->hdr = hdrinfo;
 			break ;
 		}
-		slseek(hdrinfo->file, load_command_offset + load_command_size, SLSEEK_SET);
+		slseek(hdrinfo->file, load_command_offset + \
+			load_command_size, SLSEEK_SET);
 	}
 	return (text_sect);
 }
 
-static int				dump_text_section(t_ft_nm_hdrinfo *hdrinfo, t_ft_otool_sect *text_section)
+static int				dump_text_section(t_ft_nm_hdrinfo *hdrinfo, \
+							t_ft_otool_sect *text_section)
 {
 	uint32_t			n;
 	uint32_t			byte_n;
@@ -99,7 +115,8 @@ static int				dump_text_section(t_ft_nm_hdrinfo *hdrinfo, t_ft_otool_sect *text_
 		byte_n = 0;
 		while (byte_n < 16 && n + byte_n < text_section->size)
 		{
-			if (read_byte_range_at_pos(hdrinfo, &byte_val, sizeof(char), hdrinfo->fat_offset + text_section->offset + n + byte_n))
+			if (read_byte_range_at_pos(hdrinfo, &byte_val, sizeof(char), \
+				hdrinfo->fat_offset + text_section->offset + n + byte_n))
 				return (1);
 			ft_printf("%02" PRIx8 " ", byte_val);
 			byte_n++;
@@ -128,11 +145,11 @@ int						ft_otool_process_file(t_ft_nm_file *file)
 		!(syms = build_symbol_list(hdr_to_use, false)))
 		return (1);
 	free_symbol_list(syms);
-	ft_putstr_fd(file->filepath, STDOUT_FILENO);
-	ft_putstr_fd(":\n", STDOUT_FILENO);
+	ft_printf("%s:\n", file->filepath);
 	if (!((text_section = get_text_sect_offset(hdr_to_use))))
 		return (0);
-	if (slseek(file, hdr_to_use->fat_offset + text_section->offset, SLSEEK_SET) == -1)
+	if (slseek(file, hdr_to_use->fat_offset + \
+		text_section->offset, SLSEEK_SET) == -1)
 		return (1);
 	dump_text_section(hdr_to_use, text_section);
 	free(text_section);

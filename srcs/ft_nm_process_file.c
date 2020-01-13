@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 19:04:59 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 21:35:49 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,6 @@ int				ft_nm_process_file(t_ft_nm_file *file, bool print_filename)
 {
 	t_ft_nm_hdrinfo		hdrs;
 	t_ft_nm_hdrinfo		*hdr_to_use;
-	int					idx;
 	struct load_command	cmd;
 	t_ft_nm_sym			*symlist;
 

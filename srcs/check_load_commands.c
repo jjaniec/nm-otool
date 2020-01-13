@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 20:29:00 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/11 16:11:42 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 21:36:58 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ static int		check_segment_command_64(t_ft_nm_hdrinfo *hdrinfo, \
 static int		check_segment_command_32(t_ft_nm_hdrinfo *hdrinfo, \
 					struct segment_command *seg, uint32_t *parsed_filesize)
 {
-	if (seg->fileoff != *parsed_filesize)
+	if ((seg->fileoff - *parsed_filesize) % 4096 && \
+		!(seg->fileoff == (hdrinfo->machhdr_size + hdrinfo->sizeofcmds)))
 	{
 		ft_putstr_fd("Inconsistent file offsets / " \
 			"sizes in segment_command_32\n", 2);
@@ -54,7 +55,7 @@ static int		check_segment_command_32(t_ft_nm_hdrinfo *hdrinfo, \
 }
 
 static int		check_segment_command(t_ft_nm_hdrinfo *hdrinfo, \
-					struct segment_command *seg, uint32_t *parsed_filesize)
+					void *seg, uint32_t *parsed_filesize)
 {
 	if (hdrinfo->is_64)
 		return (check_segment_command_64(hdrinfo, seg, parsed_filesize));

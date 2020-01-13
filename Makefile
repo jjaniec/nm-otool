@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2020/01/03 18:18:41 by jjaniec          ###   ########.fr        #
+#    Updated: 2020/01/13 21:28:58 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,8 @@ NM_SRC_NAME = 	ft_nm.c \
 				check_load_commands.c \
 				dump_symlist.c \
 				read_file_content.c \
-				goto_hdr_cpu_type.c
+				goto_hdr_cpu_type.c \
+				add_new_sym_to_list.c
 
 OTOOL_SRC_NAME =	ft_otool.c \
 					ft_otool_process_file.c \
@@ -54,7 +55,8 @@ OTOOL_SRC_NAME =	ft_otool.c \
 					read_byte_range_at_pos.c \
 					check_load_commands.c \
 					read_file_content.c \
-					goto_hdr_cpu_type.c
+					goto_hdr_cpu_type.c \
+					add_new_sym_to_list.c
 
 HEADERS_NAME = ft_nm.h
 

@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/11 18:56:35 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 21:34:05 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,6 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	hdrinfo->is_be = is_big_endian(magic);
 	slseek(hdrinfo->file, hdrinfo->fat_offset + sizeof(uint32_t), SLSEEK_SET);
 	return (init_macho_header_cmds(hdrinfo));
-	// if (!init_macho_header_cmds(hdrinfo))
-	// 	return (NULL);
-	// dprintf(2, "Init new header: magic: %x, is_be: %d, is_64: %d, cpu_type: %u, subtype: %x / %u, fat_offset %u, size: %zu, fat_size: %u, fat_align: %u, ncdms: %u - sizeofcmds: %u\n", \
-	// 	hdrinfo->magic, hdrinfo->is_be, hdrinfo->is_64, hdrinfo->cpu_type, (hdrinfo->cpu_subtype & 0xf), CPU_SUBTYPE_X86_64_ALL, hdrinfo->fat_offset, hdrinfo->machhdr_size, hdrinfo->fat_size, hdrinfo->fat_align, hdrinfo->ncmds, hdrinfo->sizeofcmds);
-	// return (hdrinfo);
 }
 
 static int			fill_next_fat_header_infos(t_ft_nm_file *file, \
@@ -140,7 +135,7 @@ static int			handle_fat_header(t_ft_nm_file *file, \
 		{
 			new_mach_header = malloc(sizeof(t_ft_nm_hdrinfo));
 			if (fill_next_fat_header_infos(file, &fat_header_idx, magic, \
-				(void *[2]){cur_mach_header, new_mach_header}))
+				(t_ft_nm_hdrinfo *[2]){cur_mach_header, new_mach_header}))
 				return (1);
 			cur_mach_header->next = new_mach_header;
 			cur_mach_header = new_mach_header;
@@ -148,11 +143,10 @@ static int			handle_fat_header(t_ft_nm_file *file, \
 		else
 		{
 			if (fill_next_fat_header_infos(file, &fat_header_idx, magic, \
-				(void *[2]){NULL, hdrinfo}))
+				(t_ft_nm_hdrinfo *[2]){NULL, hdrinfo}))
 				return (1);
 			cur_mach_header = hdrinfo;
 		}
-		// dprintf(2, "fat_header_idx: %d / %" PRIu32 " - cur_mach_header: %p, offset: %x\n", fat_header_idx, nfat_arch, cur_mach_header, cur_mach_header->fat_offset);
 	}
 	return (0);
 }
