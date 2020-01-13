@@ -6,53 +6,75 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/11 19:39:27 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 19:04:59 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static int		parse_cmd_sectn(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct segment_command_64 *seg64, uint32_t *sect_count)
+static int		assign_cmd_nsect(t_ft_nm_hdrinfo *hdrinfo, \
+					uint32_t *sect_count, void *section_ptr)
+{
+	char		*sectname;
+	char		*segname;
+
+	if (hdrinfo->is_64)
+	{
+		sectname = ((struct section_64 *)section_ptr)->sectname;
+		segname = ((struct section_64 *)section_ptr)->segname;
+	}
+	else
+	{
+		sectname = ((struct section *)section_ptr)->sectname;
+		segname = ((struct section *)section_ptr)->segname;
+	}
+	if (ft_strcmp(sectname, SECT_TEXT) == 0 &&
+		ft_strcmp(segname, SEG_TEXT) == 0)
+		hdrinfo->text_nsect = *sect_count + 1;
+	else if (ft_strcmp(sectname, SECT_DATA) == 0 &&
+		ft_strcmp(segname, SEG_DATA) == 0)
+		hdrinfo->data_nsect = *sect_count + 1;
+	else if (ft_strcmp(sectname, SECT_BSS) == 0 &&
+		ft_strcmp(segname, SEG_DATA) == 0)
+		hdrinfo->bss_nsect = *sect_count + 1;
+	*sect_count += 1;
+	return (0);
+}
+
+static int		parse_cmd_sectn(t_ft_nm_file *file, \
+					t_ft_nm_hdrinfo *hdrinfo, \
+					struct segment_command_64 *seg64, uint32_t *sect_count)
 {
 	struct section_64	section;
 	void				*section_ptr;
 	uint32_t			i;
 	uint32_t			parsed_size;
 
-int		test = 0;
-
 	i = 0;
 	parsed_size = 0;
-	dprintf(DEBUG_FD, "Segname64: %s - nsects: %u - size: %u - headersize: %zu - headersize section: %zu\n", seg64->segname, seg64->nsects, seg64->cmdsize, sizeof(struct segment_command_64), sizeof(struct section_64));
 	section_ptr = (void *)(seg64 + 1);
 	while (i < seg64->nsects && parsed_size < seg64->cmdsize)
 	{
 		slseek(file, section_ptr - (void *)file->content, SLSEEK_SET);
 		sseek_read(file, &section, sizeof(struct section_64));
-		dprintf(DEBUG_FD, "Section %u / %u: %s - %s\n", i, seg64->nsects, section.segname, section.sectname);
-		if (ft_strcmp(section.sectname, SECT_TEXT) == 0 &&
-			ft_strcmp(section.segname, SEG_TEXT) == 0)
-			hdrinfo->text_nsect = *sect_count + 1;
-		else if (ft_strcmp(section.sectname, SECT_DATA) == 0 &&
-			ft_strcmp(section.segname, SEG_DATA) == 0)
-			hdrinfo->data_nsect = *sect_count + 1;
-		else if (ft_strcmp(section.sectname, SECT_BSS) == 0 &&
-			ft_strcmp(section.segname, SEG_DATA) == 0)
-			hdrinfo->bss_nsect = *sect_count + 1;
+		assign_cmd_nsect(hdrinfo, sect_count, &section);
 		i++;
-		*sect_count += 1;
 		parsed_size += sizeof(struct section_64);
 		section_ptr += sizeof(struct section_64);
 	}
-	if (parsed_size + sizeof(struct segment_command_64) > seg64->cmdsize || i != seg64->nsects)
+	if (parsed_size + sizeof(struct segment_command_64) > \
+		seg64->cmdsize || i != seg64->nsects)
 	{
-		dprintf(ERR_FD, NM_ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n");
+		dprintf(ERR_FD, NM_ERR_PREFIX "Inconsistent load command size" \
+			" / number of sections in LC_SEGMENT\n");
 		return (1);
 	}
 	return (0);
 }
 
-static int		parse_cmd_sectn_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, struct segment_command *seg32, uint32_t *sect_count)
+static int		parse_cmd_sectn_32(t_ft_nm_file *file, \
+					t_ft_nm_hdrinfo *hdrinfo, \
+					struct segment_command *seg32, uint32_t *sect_count)
 {
 	struct section		section;
 	void				*section_ptr;
@@ -61,30 +83,21 @@ static int		parse_cmd_sectn_32(t_ft_nm_file *file, t_ft_nm_hdrinfo *hdrinfo, str
 
 	i = 0;
 	parsed_size = 0;
-	dprintf(DEBUG_FD, "Segname32: %s\n", seg32->segname);
 	section_ptr = (void *)(seg32 + 1);
 	while (i < seg32->nsects && parsed_size < seg32->cmdsize)
 	{
 		slseek(file, section_ptr - (void *)file->content, SLSEEK_SET);
 		sseek_read(file, &section, sizeof(struct section));
-		dprintf(DEBUG_FD, "Section %u / %u: %s - %s\n", i, seg32->nsects, section.segname, section.sectname);
-		if (ft_strcmp(section.sectname, SECT_TEXT) == 0 &&
-			ft_strcmp(section.segname, SEG_TEXT) == 0)
-			hdrinfo->text_nsect = *sect_count + 1;
-		else if (ft_strcmp(section.sectname, SECT_DATA) == 0 &&
-			ft_strcmp(section.segname, SEG_DATA) == 0)
-			hdrinfo->data_nsect = *sect_count + 1;
-		else if (ft_strcmp(section.sectname, SECT_BSS) == 0 &&
-			ft_strcmp(section.segname, SEG_DATA) == 0)
-			hdrinfo->bss_nsect = *sect_count + 1;
+		assign_cmd_nsect(hdrinfo, sect_count, &section);
 		i++;
-		*sect_count += 1;
 		parsed_size += sizeof(struct section);
 		section_ptr += sizeof(struct section);
 	}
-	if (parsed_size + sizeof(struct segment_command_64) > seg32->cmdsize || i != seg32->nsects)
+	if (parsed_size + sizeof(struct segment_command_64) > \
+		seg32->cmdsize || i != seg32->nsects)
 	{
-		ft_putstr_fd(NM_ERR_PREFIX "Inconsistent load command size / number of sections in LC_SEGMENT\n", ERR_FD);
+		ft_putstr_fd(NM_ERR_PREFIX "Inconsistent load command size" \
+			" / number of sections in LC_SEGMENT\n", ERR_FD);
 		return (1);
 	}
 	return (0);
