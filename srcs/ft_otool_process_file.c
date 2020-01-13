@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:20:25 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 21:43:48 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 22:09:43 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,25 +40,24 @@ static t_ft_otool_sect	*search_sect(t_ft_nm_hdrinfo *hdrinfo, \
 							char *sectname, char *segname)
 {
 	struct section_64	section;
-	void				*section_ptr;
 	uint32_t			i;
 	t_ft_otool_sect		*r;
 	uint32_t			parsed_size;
 
 	i = 0;
 	parsed_size = 0;
-	section_ptr = (void *)( (hdrinfo->is_64) ? (seg + 1) : ((struct segment_command *)seg + 1));
-	while (i < (hdrinfo->is_64) ? (seg->nsects) : (((struct segment_command *)seg)->nsects) && \
-		parsed_size < ((hdrinfo->is_64) ? (seg->cmdsize) : (((struct segment_command *)seg))->cmdsize))
+	while (i++ < ((hdrinfo->is_64) ? (seg->nsects) : \
+			(((struct segment_command *)seg)->nsects)) && \
+		parsed_size < ((hdrinfo->is_64) ? (seg->cmdsize) : \
+			(((struct segment_command *)seg))->cmdsize))
 	{
-		slseek(hdrinfo->file, section_ptr - (void *)hdrinfo->file->content, SLSEEK_SET);
+		slseek(hdrinfo->file, (parsed_size + (void *)((hdrinfo->is_64) ? \
+			(seg + 1) : ((struct segment_command *)seg + 1))) - \
+			(void *)hdrinfo->file->content, SLSEEK_SET);
 		sseek_read(hdrinfo->file, &section, sizeof(struct section_64));
 		if ((r = get_sect_data(hdrinfo, &section, sectname, segname)))
 			return (r);
-		i++;
 		parsed_size += (hdrinfo->is_64) ? \
-			(sizeof(struct section_64)) : (sizeof(struct section));
-		section_ptr += (hdrinfo->is_64) ? \
 			(sizeof(struct section_64)) : (sizeof(struct section));
 	}
 	if (parsed_size + sizeof(struct segment_command_64) > seg->cmdsize || \

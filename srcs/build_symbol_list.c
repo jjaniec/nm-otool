@@ -6,14 +6,15 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 21:29:17 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 22:25:14 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static char		get_symbol_type(uint8_t type, uint8_t sect, uint64_t value, \
-					t_ft_nm_hdrinfo *hdrinfo)
+static char			get_symbol_type(uint8_t type, uint8_t sect, \
+						uint64_t value, \
+						t_ft_nm_hdrinfo *hdrinfo)
 {
 	type = type & N_TYPE;
 	if (type == N_UNDF)
@@ -41,9 +42,9 @@ static char		get_symbol_type(uint8_t type, uint8_t sect, uint64_t value, \
 	return ('?');
 }
 
-static char		*safe_read_symname(t_ft_nm_hdrinfo *hdrinfo, \
-					unsigned int index, bool handle_corrupt_syms, \
-					struct symtab_command *symtabcmd)
+static char			*safe_read_symname(t_ft_nm_hdrinfo *hdrinfo, \
+						unsigned int index, bool handle_corrupt_syms, \
+						struct symtab_command *symtabcmd)
 {
 	size_t		original_offset;
 	uint32_t	strsize;
@@ -67,7 +68,7 @@ static char		*safe_read_symname(t_ft_nm_hdrinfo *hdrinfo, \
 	return ((&strtab[index]));
 }
 
-static char		*get_indr_name(t_ft_nm_file *file, uint64_t n_value, \
+static char			*get_indr_name(t_ft_nm_file *file, uint64_t n_value, \
 					char *strtab_offset, struct symtab_command *symtabcmd)
 {
 	if (n_value == 0)
@@ -141,10 +142,10 @@ static t_ft_nm_sym	*append_next_sym_32(t_ft_nm_hdrinfo *hdrinfo, \
 ** Build symbol list and return beginning of the list
 */
 
-static t_ft_nm_sym		*build_symbol_list_64(t_ft_nm_file *file, \
-							t_ft_nm_hdrinfo *hdrinfo, \
-							struct symtab_command *symtabcmd, \
-							bool handle_corrupt_syms)
+static t_ft_nm_sym	*build_symbol_list_64(t_ft_nm_file *file, \
+						t_ft_nm_hdrinfo *hdrinfo, \
+						struct symtab_command *symtabcmd, \
+						bool handle_corrupt_syms)
 {
 	uint32_t			i;
 	struct nlist_64		*symtab;
@@ -169,10 +170,10 @@ static t_ft_nm_sym		*build_symbol_list_64(t_ft_nm_file *file, \
 	return (list);
 }
 
-static t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, \
-							t_ft_nm_hdrinfo *hdrinfo, \
-							struct symtab_command *symtabcmd, \
-							bool handle_corrupt_syms)
+static t_ft_nm_sym	*build_symbol_list_32(t_ft_nm_file *file, \
+						t_ft_nm_hdrinfo *hdrinfo, \
+						struct symtab_command *symtabcmd, \
+						bool handle_corrupt_syms)
 {
 	uint32_t			i;
 	struct nlist		*symtab;
@@ -197,8 +198,8 @@ static t_ft_nm_sym		*build_symbol_list_32(t_ft_nm_file *file, \
 	return (list);
 }
 
-t_ft_nm_sym				*build_symbol_list(t_ft_nm_hdrinfo *hdrinfo, \
-							bool handle_corrupt_syms)
+t_ft_nm_sym			*build_symbol_list(t_ft_nm_hdrinfo *hdrinfo, \
+						bool handle_corrupt_syms)
 {
 	slseek(hdrinfo->file, hdrinfo->fat_offset + hdrinfo->machhdr_size, \
 		SLSEEK_SET);

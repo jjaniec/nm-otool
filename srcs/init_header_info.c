@@ -6,14 +6,14 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 21:34:05 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 22:16:50 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-static int			init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, \
-						struct fat_arch *arch, uint32_t fat_magic)
+static int				init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, \
+							struct fat_arch *arch, uint32_t fat_magic)
 {
 	if (arch)
 	{
@@ -90,9 +90,9 @@ static t_ft_nm_hdrinfo	*init_macho_header(t_ft_nm_file *file, \
 	return (init_macho_header_cmds(hdrinfo));
 }
 
-static int			fill_next_fat_header_infos(t_ft_nm_file *file, \
-						uint32_t *fat_header_idx, uint32_t magic, \
-						t_ft_nm_hdrinfo **headers)
+static int				fill_next_fat_header_infos(t_ft_nm_file *file, \
+							uint32_t *fat_header_idx, uint32_t magic, \
+							t_ft_nm_hdrinfo **headers)
 {
 	struct fat_arch		arch;
 	t_ft_nm_hdrinfo		*cur_mach_header;
@@ -120,9 +120,9 @@ static int			fill_next_fat_header_infos(t_ft_nm_file *file, \
 	return (0);
 }
 
-static int			handle_fat_header(t_ft_nm_file *file, \
-						t_ft_nm_hdrinfo *hdrinfo, uint32_t nfat_arch, \
-						uint32_t magic)
+static int				handle_fat_header(t_ft_nm_file *file, \
+							t_ft_nm_hdrinfo *hdrinfo, uint32_t nfat_arch, \
+							uint32_t magic)
 {
 	uint32_t			fat_header_idx;
 	t_ft_nm_hdrinfo		*cur_mach_header;
@@ -151,8 +151,8 @@ static int			handle_fat_header(t_ft_nm_file *file, \
 	return (0);
 }
 
-int					init_header_info(t_ft_nm_file *file, \
-						t_ft_nm_hdrinfo *hdrinfo)
+int						init_header_info(t_ft_nm_file *file, \
+							t_ft_nm_hdrinfo *hdrinfo)
 {
 	uint32_t			magic;
 	uint32_t			nfat_arch;

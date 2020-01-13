@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 21:28:32 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/13 22:19:43 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,6 +201,9 @@ void						*free_symbol_list(t_ft_nm_sym *syms);
 t_ft_nm_sym					*add_new_sym_to_list(t_ft_nm_sym **list, \
 								uint64_t symvalue, char **symname, \
 								char *types);
+
+int							check_segment_command(t_ft_nm_hdrinfo *hdrinfo, \
+								void *seg, uint32_t *parsed_filesize);
 
 /*
 ** Parsing
