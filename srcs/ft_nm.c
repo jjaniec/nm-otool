@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:19 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/11 15:58:01 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/14 18:51:06 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ static int			read_and_process_file(char *filename, bool print_filename)
 
 	if ((file.totsiz = read_file_content(filename, &file_content)) == -1)
 		return (1);
-	dprintf(2, "Read file total size: %d, %zu\n", \
-		file.totsiz, sizeof(struct nlist_64));
 	file.content = file_content;
 	file.seek_ptr = file.content;
 	file.filepath = filename;

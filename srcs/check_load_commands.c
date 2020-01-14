@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 20:29:00 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 22:19:06 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/14 18:51:42 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ static int		check_load_commands_64(t_ft_nm_hdrinfo *hdrinfo)
 			return (2);
 		parsed_ncmds++;
 	}
-	dprintf(DEBUG_FD, "Parsed ncmds: %u / %u - parsed_size: %u / %u - parsed_filesize: %u / %u / %u\n", parsed_ncmds, hdrinfo->ncmds, parsed_sizeofcmds, hdrinfo->sizeofcmds, parsed_filesize, hdrinfo->file->totsiz, hdrinfo->fat_size);
 	if (!(parsed_filesize <= hdrinfo->fat_size))
 	{
 		ft_putstr_fd("Inconsistent file offsets / " \
@@ -93,6 +92,6 @@ int				check_load_commands(t_ft_nm_file *file, \
 
 	slseek(file, hdrinfo->fat_offset + hdrinfo->machhdr_size, SLSEEK_SET);
 	if ((r = check_load_commands_64(hdrinfo)) == 1)
-		dprintf(ERR_FD, "Invalid load commands size / number\n");
+		ft_putstr_fd("Invalid load commands size / number\n", ERR_FD);
 	return (r);
 }

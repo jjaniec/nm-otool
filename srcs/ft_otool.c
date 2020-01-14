@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:07:35 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/10 20:04:46 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/14 18:52:35 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,11 @@ int		main(int ac, char **av)
 		return (1);
 	}
 	i = 0;
-	while (++i != ac)
+	while (++i != (unsigned int)ac)
 	{
 		file_path = av[i];
 		if ((file.totsiz = read_file_content(file_path, &file_content)) == -1)
 			return (1);
-		dprintf(2, "Read file total size: %d\n", file.totsiz);
 		file.filepath = file_path;
 		file.content = file_content;
 		file.seek_ptr = file.content;

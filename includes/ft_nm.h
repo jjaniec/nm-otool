@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 22:19:43 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/14 19:10:50 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,24 @@ t_ft_nm_sym					*add_new_sym_to_list(t_ft_nm_sym **list, \
 
 int							check_segment_command(t_ft_nm_hdrinfo *hdrinfo, \
 								void *seg, uint32_t *parsed_filesize);
+
+int							ft_print_incons_lc(void);
+
+int							init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, \
+								struct fat_arch *arch, uint32_t fat_magic);
+
+char						*get_indr_name(t_ft_nm_file *file, \
+								uint64_t n_value, \
+								char *strtab_offset, \
+								struct symtab_command *symtabcmd);
+
+char						*safe_read_symname(t_ft_nm_hdrinfo *hdrinfo, \
+								unsigned int index, bool handle_corrupt_syms, \
+								struct symtab_command *symtabcmd);
+
+char						get_symbol_type(uint8_t type, uint8_t sect, \
+								uint64_t value, \
+								t_ft_nm_hdrinfo *hdrinfo);
 
 /*
 ** Parsing

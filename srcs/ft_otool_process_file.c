@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:20:25 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/13 22:09:43 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/14 19:00:46 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static t_ft_otool_sect	*search_sect(t_ft_nm_hdrinfo *hdrinfo, \
 			(((struct segment_command *)seg))->cmdsize))
 	{
 		slseek(hdrinfo->file, (parsed_size + (void *)((hdrinfo->is_64) ? \
-			(seg + 1) : ((struct segment_command *)seg + 1))) - \
+			(seg + 1) : ((void *)seg + sizeof(struct segment_command)))) - \
 			(void *)hdrinfo->file->content, SLSEEK_SET);
 		sseek_read(hdrinfo->file, &section, sizeof(struct section_64));
 		if ((r = get_sect_data(hdrinfo, &section, sectname, segname)))
@@ -62,8 +62,7 @@ static t_ft_otool_sect	*search_sect(t_ft_nm_hdrinfo *hdrinfo, \
 	}
 	if (parsed_size + sizeof(struct segment_command_64) > seg->cmdsize || \
 		i != seg->nsects)
-		ft_putstr_fd(OTOOL_ERR_PREFIX "Inconsistent load command size" \
-			" / number of sections in LC_SEGMENT\n", ERR_FD);
+		ft_print_incons_lc();
 	return (NULL);
 }
 

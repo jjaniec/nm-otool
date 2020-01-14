@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2020/01/13 22:20:02 by jjaniec          ###   ########.fr        #
+#    Updated: 2020/01/14 19:10:25 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,11 @@ NM_SRC_NAME = 	ft_nm.c \
 				read_file_content.c \
 				goto_hdr_cpu_type.c \
 				add_new_sym_to_list.c \
+				ft_print_incons_lc.c \
+				init_fat_arch_values.c \
+				safe_read_symname.c \
+				get_indr_name.c \
+				get_symbol_type.c \
 				check_segment_command.c
 
 OTOOL_SRC_NAME =	ft_otool.c \
@@ -58,6 +63,11 @@ OTOOL_SRC_NAME =	ft_otool.c \
 					read_file_content.c \
 					goto_hdr_cpu_type.c \
 					add_new_sym_to_list.c \
+					ft_print_incons_lc.c \
+					init_fat_arch_values.c \
+					safe_read_symname.c \
+					get_indr_name.c \
+					get_symbol_type.c \
 					check_segment_command.c
 
 HEADERS_NAME = ft_nm.h
@@ -70,7 +80,7 @@ NM_OBJ = $(addprefix ${OBJ_DIR}, $(NM_SRC_NAME:.c=.o))
 OTOOL_OBJ = $(addprefix ${OBJ_DIR}, $(OTOOL_SRC_NAME:.c=.o))
 
 CC = gcc
-CFLAGS = -Wall -Wextra # -Werror
+CFLAGS = -Wall -Wextra -Werror
 DEV_FLAGS = -g -fsanitize=address -fno-omit-frame-pointer
 IFLAGS = -I./ft_printf/includes -I./$(INCLUDES_DIR)
 LFLAGS = -L./ft_printf -lftprintf
