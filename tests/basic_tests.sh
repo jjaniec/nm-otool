@@ -6,7 +6,6 @@ set -o verbose
 
 dirs=(
   "$PWD/../objs/*"
-  "$PWD/bin-tests/*"
 	"$PWD/corrupted_binaries/*"
 	"/bin/*"
 	"/usr/bin/*"
