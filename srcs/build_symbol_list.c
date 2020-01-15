@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 16:29:17 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 19:09:34 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/15 18:37:08 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,8 @@ static t_ft_nm_sym	*build_symbol_list_64(t_ft_nm_file *file, \
 		if (-1 == slseek(file, (int)((char *)&symtab[i] - \
 			file->content), SLSEEK_SET))
 		{
-			dprintf(2, "slseek() failed\n");
-			exit(1);
+			ft_putstr_fd("Invalid nsyms count, exiting\n", 2);
+			return (NULL);
 		}
 		i++;
 		if (!append_next_sym_64(hdrinfo, symtabcmd, &list, handle_corrupt_syms))
@@ -120,8 +120,8 @@ static t_ft_nm_sym	*build_symbol_list_32(t_ft_nm_file *file, \
 		if (-1 == slseek(file, (int)((char *)&symtab[i] - \
 			file->content), SLSEEK_SET))
 		{
-			dprintf(2, "slseek() failed\n");
-			exit(1);
+			ft_putstr_fd("Invalid nsyms count, exiting\n", 2);
+			return (NULL);
 		}
 		i++;
 		if (!append_next_sym_32(hdrinfo, symtabcmd, &list, handle_corrupt_syms))

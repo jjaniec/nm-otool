@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/14 19:02:03 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 19:02:12 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/15 18:38:15 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int				init_fat_arch_values(t_ft_nm_hdrinfo *hdrinfo, \
 			swap_32bit(arch->size);
 		if (hdrinfo->fat_offset % hdrinfo->fat_align)
 		{
-			dprintf(ERR_FD, "Header not aligned on it's alignment");
+			ft_putstr_fd("Header not aligned on it's alignment", ERR_FD);
 			return (1);
 		}
 	}

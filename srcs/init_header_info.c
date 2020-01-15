@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 19:03:03 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/15 18:38:52 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,12 @@ static int				fill_next_fat_header_infos(t_ft_nm_file *file, \
 	if (*fat_header_idx && \
 		check_hdr_overlap(cur_mach_header, (uint32_t)file->seek_ptr))
 	{
-		dprintf(2, "Overlap of previous header\n");
+		ft_putstr_fd("Overlap of previous header\n", ERR_FD);
 		return (2);
 	}
 	if (new_mach_header->fat_offset % new_mach_header->fat_align)
 	{
-		dprintf(ERR_FD, "Header not aligned on it's alignment");
+		ft_putstr_fd("Header not aligned on it's alignment\n", ERR_FD);
 		return (1);
 	}
 	*fat_header_idx += 1;
