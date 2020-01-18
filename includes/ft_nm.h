@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:16 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 19:10:50 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/18 14:27:45 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,8 @@ int							sseek_read(t_ft_nm_file *file, void *buf, \
 int							slseek(t_ft_nm_file *file, int offset, int whence);
 
 void						swap_byte_range(void *bytes, size_t range);
+
+int							free_hdr_list(t_ft_nm_hdrinfo *hdrinfo);
 
 /*
 ** otool

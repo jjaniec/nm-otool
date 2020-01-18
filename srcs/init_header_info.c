@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 14:27:45 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/15 18:38:52 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/18 13:34:14 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ int						init_header_info(t_ft_nm_file *file, \
 	uint32_t			magic;
 	uint32_t			nfat_arch;
 
+	hdrinfo->next = NULL;
 	sseek_read(file, &magic, sizeof(uint32_t));
 	if (is_magic_fat(magic))
 	{

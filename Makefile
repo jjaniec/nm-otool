@@ -6,7 +6,7 @@
 #    By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/26 17:45:35 by jjaniec           #+#    #+#              #
-#    Updated: 2020/01/14 19:10:25 by jjaniec          ###   ########.fr        #
+#    Updated: 2020/01/18 15:21:35 by jjaniec          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,8 @@ NM_SRC_NAME = 	ft_nm.c \
 				safe_read_symname.c \
 				get_indr_name.c \
 				get_symbol_type.c \
-				check_segment_command.c
+				check_segment_command.c \
+				free_hdr_list.c
 
 OTOOL_SRC_NAME =	ft_otool.c \
 					ft_otool_process_file.c \
@@ -68,7 +69,8 @@ OTOOL_SRC_NAME =	ft_otool.c \
 					safe_read_symname.c \
 					get_indr_name.c \
 					get_symbol_type.c \
-					check_segment_command.c
+					check_segment_command.c \
+					free_hdr_list.c
 
 HEADERS_NAME = ft_nm.h
 
@@ -85,7 +87,7 @@ DEV_FLAGS = -g -fsanitize=address -fno-omit-frame-pointer
 IFLAGS = -I./ft_printf/includes -I./$(INCLUDES_DIR)
 LFLAGS = -L./ft_printf -lftprintf
 
-CFLAGS += $(DEV_FLAGS)
+# CFLAGS += $(DEV_FLAGS)
 FT_PRINTF_DIR = ./ft_printf
 LIBFTPRINTF = $(addprefix $(FT_PRINTF_DIR),"/libftprintf.a")
 
