@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 16:09:55 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/15 18:37:56 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/18 13:45:51 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,17 +139,18 @@ int				ft_nm_process_file(t_ft_nm_file *file, bool print_filename)
 	t_ft_nm_sym			*symlist;
 
 	if (init_header_info(file, &hdrs) >= 1)
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	if (!(hdr_to_use = goto_hdr_cpu_type(&hdrs, HOST_CPU_TYPE)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_X86)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_I386)))
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	if (check_load_commands(file, hdr_to_use) || \
 		parse_file_segment_cmds(file, hdr_to_use, &cmd))
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	if (!(symlist = build_symbol_list(hdr_to_use, true)))
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	dump_symlist(hdr_to_use, symlist, print_filename);
 	free_symbol_list(symlist);
+	free_hdr_list(hdrs.next);
 	return (0);
 }

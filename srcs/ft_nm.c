@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 15:45:19 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 18:51:06 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/18 15:03:34 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,16 @@ static int			read_and_process_file(char *filename, bool print_filename)
 {
 	t_ft_nm_file	file;
 	char			*file_content;
+	int				r;
 
 	if ((file.totsiz = read_file_content(filename, &file_content)) == -1)
 		return (1);
 	file.content = file_content;
 	file.seek_ptr = file.content;
 	file.filepath = filename;
-	return (ft_nm_process_file(&file, print_filename));
+	r = ft_nm_process_file(&file, print_filename);
+	free(file_content);
+	return (r);
 }
 
 int					main(int ac, char **av)

@@ -6,17 +6,32 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:07:35 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 18:52:35 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/18 15:20:32 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_nm.h>
 
-int		main(int ac, char **av)
+static int		read_and_process_file(char *filename)
 {
-	char			*file_path;
 	char			*file_content;
 	t_ft_nm_file	file;
+
+	if ((file.totsiz = read_file_content(filename, &file_content)) == -1)
+	{
+		free(file_content);
+		return (1);
+	}
+	file.filepath = filename;
+	file.content = file_content;
+	file.seek_ptr = file.content;
+	ft_otool_process_file(&file);
+	free(file_content);
+	return (0);
+}
+
+int				main(int ac, char **av)
+{
 	unsigned int	i;
 
 	if (!(ac > 1))
@@ -28,12 +43,8 @@ int		main(int ac, char **av)
 	i = 0;
 	while (++i != (unsigned int)ac)
 	{
-		file_path = av[i];
-		if ((file.totsiz = read_file_content(file_path, &file_content)) == -1)
+		if (read_and_process_file(av[1]) == 1)
 			return (1);
-		file.filepath = file_path;
-		file.content = file_content;
-		file.seek_ptr = file.content;
-		ft_otool_process_file(&file);
 	}
+	return (0);
 }

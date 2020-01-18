@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 15:16:18 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 19:18:41 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/18 14:31:33 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ static int	ft_resize_buf(int fd, char **buf, int *bufsize_multiplier,
 	int		buf2_len;
 	char	*new_buf;
 
-	buf2 = malloc(42 * (*bufsize_multiplier));
-	buf2_len = read(fd, buf2, 42 * (*bufsize_multiplier));
+	buf2 = malloc(256 * (*bufsize_multiplier));
+	buf2_len = read(fd, buf2, 256 * (*bufsize_multiplier));
 	new_buf = malloc(sizeof(char) * (*total_len + buf2_len));
 	ft_memcpy(new_buf, *buf, *total_len);
 	ft_memcpy(new_buf + *total_len, buf2, buf2_len);
@@ -33,7 +33,7 @@ static int	ft_resize_buf(int fd, char **buf, int *bufsize_multiplier,
 	free(buf2);
 	free(*buf);
 	*buf = new_buf;
-	return (buf2_len == 42 * (*bufsize_multiplier));
+	return (buf2_len == 256 * (*bufsize_multiplier));
 }
 
 /*
@@ -48,10 +48,14 @@ char		*ft_read_content(int fd, int *read_total)
 	int		multiplier;
 
 	multiplier = 1;
-	buf = malloc(42);
-	x = read(fd, buf, 42);
+	buf = malloc(256);
+	if ((x = read(fd, buf, 256)) == -1)
+	{
+		free(buf);
+		return (NULL);
+	}
 	*read_total = x;
-	if (x < 42)
+	if (x < 256)
 		return (buf);
 	while (1)
 	{

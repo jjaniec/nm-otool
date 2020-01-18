@@ -6,7 +6,7 @@
 /*   By: jjaniec <jjaniec@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:20:25 by jjaniec           #+#    #+#             */
-/*   Updated: 2020/01/14 19:00:46 by jjaniec          ###   ########.fr       */
+/*   Updated: 2020/01/18 15:06:37 by jjaniec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,22 +134,22 @@ int						ft_otool_process_file(t_ft_nm_file *file)
 	int					r;
 
 	if ((r = init_header_info(file, &hdrs)) >= 1)
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	if (!(hdr_to_use = goto_hdr_cpu_type(&hdrs, HOST_CPU_TYPE)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_X86)) && \
 		!(hdr_to_use = goto_hdr_cpu_type(&hdrs, CPU_TYPE_I386)))
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	if (check_load_commands(file, hdr_to_use) || \
 		!(syms = build_symbol_list(hdr_to_use, false)))
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	free_symbol_list(syms);
 	ft_printf("%s:\n", file->filepath);
 	if (!((text_section = get_text_sect_offset(hdr_to_use))))
 		return (0);
 	if (slseek(file, hdr_to_use->fat_offset + \
 		text_section->offset, SLSEEK_SET) == -1)
-		return (1);
+		return (free_hdr_list(hdrs.next));
 	dump_text_section(hdr_to_use, text_section);
 	free(text_section);
-	return (0);
+	return (free_hdr_list(hdrs.next) == 0);
 }
